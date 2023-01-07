@@ -103,6 +103,7 @@ export default {
   watch: {
     garden: {
       immediate: true,
+      deep: true,
       handler() {
         console.log("Garden changed", this.garden);
       }

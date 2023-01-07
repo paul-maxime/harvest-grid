@@ -14,8 +14,5 @@ type Garden = {
   money: number,
   plants: GardenPlant[],
   unlocked: Coord[],
-  mouse: {
-    x: number,
-    y: number,
-  },
+  selectedPlant: string | undefined,
 }

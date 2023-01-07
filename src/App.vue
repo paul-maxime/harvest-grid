@@ -5,12 +5,11 @@ import GardenCanvas from './components/GardenCanvas.vue';
 export default {
   data() {
     const garden: Garden = {
-      money: 1000,
+      money: 0,
       plants: [
         { type: "Fire Flower", x: 0, y: 0, currentStep: 0 },
         { type: "Fire Flower", x: 2, y: -3, currentStep: 0 },
       ],
-      mouse: { x: 0, y: 0 },
       unlocked: [
         { x: 0, y: 0 },
         { x: 0, y: -1 },
@@ -19,20 +18,33 @@ export default {
         { x: 1, y: -3 },
         { x: 2, y: -3 },
       ],
+      selectedPlant: undefined,
     };
-    return { garden };
+    return { garden: garden as Garden };
   },
-  components: { GameShop, GardenCanvas }
+  components: { GameShop, GardenCanvas },
+  methods: {
+    onPlantSelected(type: string) {
+      if (this.garden.selectedPlant === type) {
+        this.garden.selectedPlant = undefined;
+      } else {
+        this.garden.selectedPlant = type;
+      }
+    },
+    onGardenClick(pos: Coord) {
+      console.log(`Click at ${pos.x}, ${pos.y}`);
+    },
+  },
 }
 </script>
 
 <template>
   <main>
     <div class="column-left">
-      <GardenCanvas :garden="garden" />
+      <GardenCanvas :garden="garden" @gardenClick="onGardenClick" />
     </div>
     <div class="column-right">
-      <GameShop />
+      <GameShop :selectedPlant="garden.selectedPlant" @plantSelected="onPlantSelected" />
     </div>
   </main>
 </template>
