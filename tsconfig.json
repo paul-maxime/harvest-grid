@@ -5,9 +5,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
   },
-
   "references": [
     {
       "path": "./tsconfig.config.json"

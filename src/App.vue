@@ -28,10 +28,19 @@ export default {
 
 <template>
   <main>
-    <GameShop />
-    <GardenCanvas :garden="garden" />
+    <div class="column-left">
+      <GardenCanvas :garden="garden" />
+    </div>
+    <div class="column-right">
+      <GameShop />
+    </div>
   </main>
 </template>
 
 <style scoped>
+main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
 </style>

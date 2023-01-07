@@ -6,16 +6,19 @@ type Plant = {
   timePerStep: number,
 };
 
-const test = new Map<string, string>();
-
-const plants: Plant[] = [
+const PLANTS: Plant[] = [
   {
     name: "Fire Flower",
     seedPrice: 10,
     plantPrice: 20,
-    steps: ["fire-flower-seed", "fire-flower-1", "fire-flower-2"],
+    steps: ["fireflower_seed", "fireflower_plant"],
     timePerStep: 5,
   },
 ];
 
-export default plants;
+const IMAGES = new Map<string, string>();
+IMAGES.set("EARTH", "sprites/earth_grid.png");
+IMAGES.set("EMPTY", "sprites/empty_grid.png");
+PLANTS.flatMap(x => x.steps).forEach(x => { IMAGES.set(x, `sprites/${x}.png`); });
+
+export { PLANTS, IMAGES };

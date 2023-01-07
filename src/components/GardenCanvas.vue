@@ -1,5 +1,6 @@
 <script lang="ts">
-import type { PropType } from 'vue'
+import type { PropType } from "vue";
+import { PLANTS, IMAGES } from "@/Plants";
 
 type CanvasVariables = {
   zoomIdx: number,
@@ -8,10 +9,6 @@ type CanvasVariables = {
   canvas?: HTMLCanvasElement,
   images: { [id: string]: HTMLImageElement }
 }
-const IMAGES_REF: { [id: string]: string } = {
-  'EARTH': 'sprites/earth_grid.png',
-  'EMPTY': 'sprites/empty_grid.png'
-};
 const ZOOM_LEVELS: number[] = [1, 2, 3, 4, 5];
 
 export default {
@@ -27,12 +24,12 @@ export default {
   methods: {
     load() {
       this.canvas = (<HTMLCanvasElement>this.$refs.garden);
-      for (const key in IMAGES_REF) {
+      for (const [key, value] of IMAGES) {
         const imgObj = new Image();
-        imgObj.src = IMAGES_REF[key];
+        imgObj.src = value;
         imgObj.onload = () => {
           this.images[key] = imgObj;
-          if (Object.keys(this.images).length === Object.keys(IMAGES_REF).length) {
+          if (Object.keys(this.images).length === IMAGES.size) {
             this.drawGarden();
           }
         }
