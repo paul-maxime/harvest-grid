@@ -5,6 +5,7 @@ import { PLANTS, IMAGES } from "@/Plants";
 type CanvasVariables = {
   zoomIdx: number,
   position: Coord,
+  downPosition?: Coord,
   dragPosition?: Coord,
   canvas?: HTMLCanvasElement,
   images: { [id: string]: HTMLImageElement }
@@ -66,28 +67,28 @@ export default {
       this.drawGarden();
     },
     onMouseDown(event: MouseEvent) {
-      this.dragPosition = { x: event.screenX, y: event.screenY };
+      this.downPosition = { x: event.x, y: event.y };
+      this.dragPosition = this.downPosition;
     },
     onMouseMove(event: MouseEvent) {
       if (this.dragPosition) {
-        this.position.x += event.screenX - this.dragPosition.x;
-        this.position.y += event.screenY - this.dragPosition.y;
-        this.dragPosition = { x: event.screenX, y: event.screenY };
+        this.position.x += event.x - this.dragPosition.x;
+        this.position.y += event.y - this.dragPosition.y;
+        this.dragPosition = { x: event.x, y: event.y };
         this.drawGarden();
       }
     },
-    onMouseUp() {
+    onMouseUp(event: MouseEvent) {
+      if (this.canvas && this.downPosition?.x === event.x && this.downPosition?.y === event.y) {
+        const gardenSquare = this.getGardenSquare();
+        const curPos: Coord = { x: Math.floor((event.x - this.position.x + gardenSquare / 2 - this.canvas.width / 2) / gardenSquare), y: Math.floor((event.y - this.position.y + gardenSquare / 2 - this.canvas.height / 2) / gardenSquare) };
+        this.$emit('gardenClick', curPos);
+      }
       this.dragPosition = undefined;
+      this.downPosition = undefined;
     },
     onMouseLeave() {
       this.dragPosition = undefined;
-    },
-    onMouseClick(event: MouseEvent) {
-      if (this.canvas) {
-        const gardenSquare = this.getGardenSquare();
-        const curPos: Coord = { x: Math.floor((event.x - this.position.x + gardenSquare / 2 - this.canvas.width / 2) / gardenSquare), y: Math.floor((event.y - this.position.y + gardenSquare / 2 - this.canvas.height / 2) / gardenSquare) };
-        this.$emit('click', curPos);
-      }
     }
   },
   mounted() {
@@ -112,7 +113,7 @@ export default {
 
 <template>
   <canvas @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseup="onMouseUp" @mouseleave="onMouseLeave"
-    @click="onMouseClick" @wheel="onWheel" ref="garden" width="512" height="512">
+    @wheel="onWheel" ref="garden" width="512" height="512">
     Garden
   </canvas>
 </template>
