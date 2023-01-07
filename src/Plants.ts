@@ -8,6 +8,13 @@ type Plant = {
 
 const PLANTS: Plant[] = [
   {
+    name: "Weed",
+    seedPrice: 0,
+    plantPrice: 1,
+    steps: ["weed_seed", "weed_plant"],
+    timePerStep: 10,
+  },
+  {
     name: "Fire Flower",
     seedPrice: 10,
     plantPrice: 20,
