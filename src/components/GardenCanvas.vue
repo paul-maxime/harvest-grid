@@ -42,7 +42,6 @@ export default {
       if (this.canvas) {
         const ctx = this.canvas.getContext("2d")!;
         ctx.imageSmoothingEnabled = false;
-        const owned: Coord[] = [{ x: 0, y: 0 }];
         const GARDEN_SQUARE: number = 16 * ZOOM_LEVELS[this.zoomIdx];
         //const cs = getComputedStyle(canvas);
         //const size: {width: number, height: number} = {width: parseInt(cs.getPropertyValue('width')), height: parseInt(cs.getPropertyValue('height'))};
@@ -50,7 +49,11 @@ export default {
         for (let x = (this.canvas.width / 2 - GARDEN_SQUARE / 2) % GARDEN_SQUARE + this.position.x % GARDEN_SQUARE - GARDEN_SQUARE * 2; x < this.canvas.width; x += GARDEN_SQUARE) {
           for (let y = (this.canvas.height / 2 - GARDEN_SQUARE / 2) % GARDEN_SQUARE + this.position.y % GARDEN_SQUARE - GARDEN_SQUARE * 2; y < this.canvas.height; y += GARDEN_SQUARE) {
             const curPos: Coord = { x: Math.floor((x - this.position.x + GARDEN_SQUARE / 2 - this.canvas.width / 2) / GARDEN_SQUARE), y: Math.floor((y - this.position.y + GARDEN_SQUARE / 2 - this.canvas.height / 2) / GARDEN_SQUARE) };
-            ctx.drawImage(this.images[this.isOwned(curPos, owned) ? 'EARTH' : 'EMPTY'], x, y, GARDEN_SQUARE, GARDEN_SQUARE);
+            ctx.drawImage(this.images[this.isOwned(curPos, this.garden.unlocked) ? 'EARTH' : 'EMPTY'], x, y, GARDEN_SQUARE, GARDEN_SQUARE);
+            const plant = this.garden.plants.filter((p) => p.x === curPos.x && p.y === curPos.y)[0];
+            if (plant) {
+              ctx.drawImage(this.images[PLANTS.filter((p) => p.name === plant.type)[0].steps[plant.currentStep]], x, y, GARDEN_SQUARE, GARDEN_SQUARE);
+            }
           }
         }
       }
