@@ -38,21 +38,24 @@ export default {
     isOwned(pos: Coord, owned: Coord[]): boolean {
       return owned.filter((c) => c.x === pos.x && c.y === pos.y).length > 0;
     },
+    getGardenSquare(): number {
+      return 16 * ZOOM_LEVELS[this.zoomIdx];
+    },
     drawGarden() {
       if (this.canvas) {
         const ctx = this.canvas.getContext("2d")!;
         ctx.imageSmoothingEnabled = false;
-        const GARDEN_SQUARE: number = 16 * ZOOM_LEVELS[this.zoomIdx];
+        const gardenSquare: number = this.getGardenSquare();
         //const cs = getComputedStyle(canvas);
         //const size: {width: number, height: number} = {width: parseInt(cs.getPropertyValue('width')), height: parseInt(cs.getPropertyValue('height'))};
         //console.log(size);
-        for (let x = (this.canvas.width / 2 - GARDEN_SQUARE / 2) % GARDEN_SQUARE + this.position.x % GARDEN_SQUARE - GARDEN_SQUARE * 2; x < this.canvas.width; x += GARDEN_SQUARE) {
-          for (let y = (this.canvas.height / 2 - GARDEN_SQUARE / 2) % GARDEN_SQUARE + this.position.y % GARDEN_SQUARE - GARDEN_SQUARE * 2; y < this.canvas.height; y += GARDEN_SQUARE) {
-            const curPos: Coord = { x: Math.floor((x - this.position.x + GARDEN_SQUARE / 2 - this.canvas.width / 2) / GARDEN_SQUARE), y: Math.floor((y - this.position.y + GARDEN_SQUARE / 2 - this.canvas.height / 2) / GARDEN_SQUARE) };
-            ctx.drawImage(this.images[this.isOwned(curPos, this.garden.unlocked) ? 'EARTH' : 'EMPTY'], x, y, GARDEN_SQUARE, GARDEN_SQUARE);
+        for (let x = (this.canvas.width / 2 - gardenSquare / 2) % gardenSquare + this.position.x % gardenSquare - gardenSquare * 2; x < this.canvas.width; x += gardenSquare) {
+          for (let y = (this.canvas.height / 2 - gardenSquare / 2) % gardenSquare + this.position.y % gardenSquare - gardenSquare * 2; y < this.canvas.height; y += gardenSquare) {
+            const curPos: Coord = { x: Math.floor((x - this.position.x + gardenSquare / 2 - this.canvas.width / 2) / gardenSquare), y: Math.floor((y - this.position.y + gardenSquare / 2 - this.canvas.height / 2) / gardenSquare) };
+            ctx.drawImage(this.images[this.isOwned(curPos, this.garden.unlocked) ? 'EARTH' : 'EMPTY'], x, y, gardenSquare, gardenSquare);
             const plant = this.garden.plants.filter((p) => p.x === curPos.x && p.y === curPos.y)[0];
             if (plant) {
-              ctx.drawImage(this.images[PLANTS.filter((p) => p.name === plant.type)[0].steps[plant.currentStep]], x, y, GARDEN_SQUARE, GARDEN_SQUARE);
+              ctx.drawImage(this.images[PLANTS.filter((p) => p.name === plant.type)[0].steps[plant.currentStep]], x, y, gardenSquare, gardenSquare);
             }
           }
         }
@@ -73,11 +76,18 @@ export default {
         this.drawGarden();
       }
     },
-    onMouseUp(event: MouseEvent) {
+    onMouseUp() {
       this.dragPosition = undefined;
     },
-    onMouseLeave(event: MouseEvent) {
+    onMouseLeave() {
       this.dragPosition = undefined;
+    },
+    onMouseClick(event: MouseEvent) {
+      if (this.canvas) {
+        const gardenSquare = this.getGardenSquare();
+        const curPos: Coord = { x: Math.floor((event.x - this.position.x + gardenSquare / 2 - this.canvas.width / 2) / gardenSquare), y: Math.floor((event.y - this.position.y + gardenSquare / 2 - this.canvas.height / 2) / gardenSquare) };
+        this.$emit('click', curPos);
+      }
     }
   },
   mounted() {
@@ -102,7 +112,7 @@ export default {
 
 <template>
   <canvas @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseup="onMouseUp" @mouseleave="onMouseLeave"
-    @wheel="onWheel" ref="garden" width="512" height="512">
+    @click="onMouseClick" @wheel="onWheel" ref="garden" width="512" height="512">
     Garden
   </canvas>
 </template>
