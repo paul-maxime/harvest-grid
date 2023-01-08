@@ -51,8 +51,7 @@ export default {
     getGround(pos: Coord, owned: UnlockedCell[]): HTMLImageElement {
       const tile = owned.filter((c) => c.x === pos.x && c.y === pos.y)[0];
       if (tile) {
-        const suffix = `${tile.borders.up ? 0 : 1}-${tile.borders.down ? 0 : 1}-${tile.borders.left ? 0 : 1}-${tile.borders.right ? 0 : 1}-0-0-0-0`;
-        console.log('EARTH-' + suffix);
+        const suffix = `${tile.borders.up ? 0 : 1}-${tile.borders.down ? 0 : 1}-${tile.borders.left ? 0 : 1}-${tile.borders.right ? 0 : 1}-${tile.borders.upLeft && tile.borders.up && tile.borders.left ? 0 : 1}-${tile.borders.upRight && tile.borders.up && tile.borders.right ? 0 : 1}-${tile.borders.downLeft && tile.borders.down && tile.borders.left ? 0 : 1}-${tile.borders.downRight && tile.borders.down && tile.borders.right ? 0 : 1}`;
         if (Object.keys(this.images).includes('EARTH-' + suffix)) {
           return this.images['EARTH-' + suffix];
         }
