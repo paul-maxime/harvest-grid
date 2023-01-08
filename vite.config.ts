@@ -15,7 +15,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       external: [
-        /^sprites\/.*.png$/
+        /^\.\/sprites\/.*.png$/
       ]
     }
   }
