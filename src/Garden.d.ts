@@ -9,6 +9,7 @@ type PlantType = {
   plantPrice: number,
   steps: string[],
   ticksPerStep: number,
+  shape: Coord[],
 };
 
 type GardenPlant = {

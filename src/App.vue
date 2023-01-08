@@ -120,7 +120,7 @@ export default {
       const unlocked = this.garden.unlocked.some(p => p.x === pos.x && p.y === pos.y);
       if (unlocked) {
         this.dirtPrice = 0;
-        this.garden.selectedCell.isPlantable = true;
+        this.garden.selectedCell.isPlantable = this.canPlacePlantAt(pos, this.garden.selectedPlant);
         return;
       }
 
@@ -155,17 +155,36 @@ export default {
       if (this.garden.money < this.garden.selectedPlant.seedPrice) {
         return;
       }
+      if (!this.canPlacePlantAt(pos, this.garden.selectedPlant)) {
+        return;
+      }
       this.garden.money -= this.garden.selectedPlant.seedPrice;
-      this.garden.plants.push({
-        type: this.garden.selectedPlant.name,
-        x: pos.x,
-        y: pos.y,
-        currentStep: 0,
-        ticks: 0,
-        harvestable: false,
-      });
+      for (const relative of this.garden.selectedPlant.shape) {
+        const point = { x: pos.x + relative.x, y: pos.y + relative.y };
+        this.garden.plants.push({
+          type: this.garden.selectedPlant.name,
+          x: point.x,
+          y: point.y,
+          currentStep: 0,
+          ticks: 0,
+          harvestable: false,
+        });
+      }
       this.updateSelectedCell();
       this.save();
+    },
+    canPlacePlantAt(pos: Coord, type?: PlantType) {
+      if (!type) return false;
+      return type.shape.every(relative => {
+        const point = { x: pos.x + relative.x, y: pos.y + relative.y };
+        if (this.garden.plants.some(p => p.x === point.x && p.y === point.y)) {
+          return false;
+        }
+        if (!this.garden.unlocked.some(p => p.x === point.x && p.y === point.y)) {
+          return false;
+        }
+        return true;
+      });
     },
     voidClick(pos: Coord) {
       console.log("Click on void", pos);
