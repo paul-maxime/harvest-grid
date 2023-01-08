@@ -11,7 +11,7 @@ export default {
   components: { GameShop, GardenCanvas },
   data() {
     const garden: Garden = {
-      money: 100,
+      money: 0,
       plants: [],
       unlocked: [
         { x: 0, y: 0, borders: { up: false, down: false, left: false, right: false, upRight: false, upLeft: false, downRight: false, downLeft: false } },
@@ -320,6 +320,7 @@ body {
   font-family: "ChivoMono-Regular", "monospace";
   background-color: #E0E0E0;
   margin-bottom: 0px;
+  font-variant-ligatures: none;
 }
 main {
   display: flex;
