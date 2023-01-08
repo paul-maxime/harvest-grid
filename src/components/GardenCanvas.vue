@@ -93,28 +93,31 @@ export default {
         }
       }
     },
+    convertEventPos(event: MouseEvent): Coord {
+      return { x: event.offsetX / this.canvasSize * (this.canvas?.width ?? 1), y: event.offsetY / this.canvasSize * (this.canvas?.width ?? 1) };
+    },
     onWheel(event: WheelEvent) {
       this.zoomIdx = Math.min(ZOOM_LEVELS.length - 1, Math.max(0, this.zoomIdx - Math.sign(event.deltaY)));
       this.drawGarden();
       event.preventDefault();
     },
     onMouseDown(event: MouseEvent) {
-      this.downPosition = { x: event.offsetX, y: event.offsetY };
+      const mousePos = this.convertEventPos(event);
+      this.downPosition = { x: mousePos.x, y: mousePos.y };
       this.dragPosition = this.downPosition;
     },
     onMouseMove(event: MouseEvent) {
       let redraw = false;
-      if (this.canvas) {
-        const gardenSquare = this.getGardenSquare();
-        const curPos = { x: Math.floor((event.offsetX / this.canvasSize * this.canvas.width - this.position.x + gardenSquare / 2 - this.canvas.width / 2) / gardenSquare), y: Math.floor((event.offsetY / this.canvasSize * this.canvas.height - this.position.y + gardenSquare / 2 - this.canvas.height / 2) / gardenSquare) };
-        redraw = (curPos.x !== this.mousePosition?.x || curPos.y !== this.mousePosition?.y);
-        this.mousePosition = curPos;
-        this.$emit('gardenHover', this.mousePosition);
-      }
-      if (this.dragPosition && this.downPosition && (Math.abs(this.downPosition.x - event.offsetX) >= MOUSE_LENIENCE || Math.abs(this.downPosition.y - event.offsetY) >= MOUSE_LENIENCE)) {
-        this.position.x += event.offsetX - this.dragPosition.x;
-        this.position.y += event.offsetY - this.dragPosition.y;
-        this.dragPosition = { x: event.offsetX, y: event.offsetY };
+      const gardenSquare = this.getGardenSquare();
+      const mousePos = this.convertEventPos(event);
+      const curPos = { x: Math.floor((mousePos.x - this.position.x + gardenSquare / 2 - (this.canvas?.width ?? 0) / 2) / gardenSquare), y: Math.floor((mousePos.y - this.position.y + gardenSquare / 2 - (this.canvas?.height ?? 0) / 2) / gardenSquare) };
+      redraw = (curPos.x !== this.mousePosition?.x || curPos.y !== this.mousePosition?.y);
+      this.mousePosition = curPos;
+      this.$emit('gardenHover', this.mousePosition);
+      if (this.dragPosition && this.downPosition && (Math.abs(this.downPosition.x - mousePos.x) >= MOUSE_LENIENCE || Math.abs(this.downPosition.y - mousePos.y) >= MOUSE_LENIENCE)) {
+        this.position.x += mousePos.x - this.dragPosition.x;
+        this.position.y += mousePos.y - this.dragPosition.y;
+        this.dragPosition = { x: mousePos.x, y: mousePos.y };
         redraw = true;
       }
       if (redraw) {
@@ -122,7 +125,8 @@ export default {
       }
     },
     onMouseUp(event: MouseEvent) {
-      if (this.canvas && this.downPosition && Math.abs(this.downPosition.x - event.offsetX) < MOUSE_LENIENCE && Math.abs(this.downPosition.y - event.offsetY) < MOUSE_LENIENCE) {
+      const mousePos = this.convertEventPos(event);
+      if (this.canvas && this.downPosition && Math.abs(this.downPosition.x - mousePos.x) < MOUSE_LENIENCE && Math.abs(this.downPosition.y - mousePos.y) < MOUSE_LENIENCE) {
         this.$emit('gardenClick', this.mousePosition);
       }
       this.dragPosition = undefined;
