@@ -12,11 +12,4 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  build: {
-    rollupOptions: {
-      external: [
-        /^\.\/sprites\/.*.png$/
-      ]
-    }
-  }
 })
