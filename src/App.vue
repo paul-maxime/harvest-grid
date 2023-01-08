@@ -1,4 +1,7 @@
 <script lang="ts">
+import pako from "pako";
+import * as base64 from "byte-base64";
+
 import GameShop from './components/GameShop.vue'
 import GardenCanvas from './components/GardenCanvas.vue';
 import { PLANTS } from "@/Plants";
@@ -186,20 +189,28 @@ export default {
     },
     save() {
       this.lastSave = Date.now();
-      localStorage.setItem("harvest-save", JSON.stringify({
+      const json = JSON.stringify({
         money: this.garden.money,
         plants: this.garden.plants,
         unlocked: this.garden.unlocked,
-      }));
+      });
+      const compressed = pako.deflate(new TextEncoder().encode(json));
+      localStorage.setItem("harvest-save", base64.bytesToBase64(compressed));
     },
     load() {
       this.lastSave = Date.now();
-      const storedJson = localStorage.getItem("harvest-save");
-      if (storedJson) {
-        const storedData = JSON.parse(storedJson);
-        this.garden.money = storedData.money;
-        this.garden.plants = storedData.plants;
-        this.garden.unlocked = storedData.unlocked;
+      const compressedData = localStorage.getItem("harvest-save");
+      try {
+        if (compressedData) {
+          const uncompressed = pako.inflate(base64.base64ToBytes(compressedData));
+          const storedJson = new TextDecoder("utf-8").decode(uncompressed);
+          const storedData = JSON.parse(storedJson);
+          this.garden.money = storedData.money;
+          this.garden.plants = storedData.plants;
+          this.garden.unlocked = storedData.unlocked;
+        }
+      } catch (e) {
+        console.error("Could not load the save", e);
       }
       this.updateSelectedCell();
     },
