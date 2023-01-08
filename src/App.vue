@@ -16,6 +16,7 @@ export default {
       unlocked: [
         { x: 0, y: 0, borders: { up: false, down: false, left: false, right: false, upRight: false, upLeft: false, downRight: false, downLeft: false } },
       ],
+      unlockedPlants: 1,
       isBuyingDirt: false,
       selectedPlant: undefined,
       selectedCell: {
@@ -92,6 +93,15 @@ export default {
       this.garden.isBuyingDirt = !this.garden.isBuyingDirt;
       this.garden.selectedPlant = undefined;
     },
+    onPlantUnlocked() {
+      if (this.garden.unlockedPlants >= PLANTS.length) return;
+      const next = PLANTS[this.garden.unlockedPlants];
+      if (this.garden.money >= next.unlockPrice) {
+        this.garden.money -= next.unlockPrice;
+        this.garden.unlockedPlants += 1;
+        this.save();
+      }
+    },
     onGardenClick(pos: Coord) {
       const plant = this.garden.plants.find(p => p.x === pos.x && p.y === pos.y);
       const unlocked = this.garden.unlocked.some(p => p.x === pos.x && p.y === pos.y);
@@ -148,7 +158,6 @@ export default {
       this.updateSelectedCell();
     },
     plantClick(plant: GardenPlant) {
-      console.log("Click on plant", plant);
       const plantType = PLANTS.find(x => x.name === plant.type)!;
       if (plant.harvestable) {
         playSound('SELL');
@@ -159,7 +168,6 @@ export default {
       }
     },
     dirtClick(pos: Coord) {
-      console.log("Click on dirt", pos);
       if (!this.garden.selectedPlant) {
         return;
       }
@@ -198,7 +206,6 @@ export default {
       });
     },
     voidClick(pos: Coord) {
-      console.log("Click on void", pos);
       if (!this.garden.isBuyingDirt) return;
       const price = (Math.abs(pos.x) + Math.abs(pos.y)) * 10;
       if (this.garden.money < price) return;
@@ -226,7 +233,6 @@ export default {
         unlocked.borders.downLeft = this.garden.unlocked.some(p => p.x === unlocked.x - 1 && p.y === unlocked.y + 1);
         unlocked.borders.downRight = this.garden.unlocked.some(p => p.x === unlocked.x + 1 && p.y === unlocked.y + 1);
       });
-      console.log(this.garden.unlocked);
     },
     saveIfRequired() {
       const elapsed = Date.now() - this.lastSave;
@@ -238,8 +244,8 @@ export default {
         money: this.garden.money,
         plants: this.garden.plants,
         unlocked: this.garden.unlocked.map(p => ({ x: p.x, y: p.y })),
+        unlockedPlants: this.garden.unlockedPlants,
       });
-      console.log(json);
       const compressed = pako.deflate(new TextEncoder().encode(json));
       localStorage.setItem("harvest-save", base64.bytesToBase64(compressed));
     },
@@ -251,12 +257,13 @@ export default {
           const uncompressed = pako.inflate(base64.base64ToBytes(compressedData));
           const storedJson = new TextDecoder("utf-8").decode(uncompressed);
           const storedData = JSON.parse(storedJson);
-          this.garden.money = storedData.money;
-          this.garden.plants = storedData.plants;
-          this.garden.unlocked = storedData.unlocked.map((p: Coord) => ({
+          this.garden.money = storedData.money || 0;
+          this.garden.plants = storedData.plants || [];
+          this.garden.unlocked = (storedData.unlocked || []).map((p: Coord) => ({
             ...p,
             borders: { up: false, down: false, left: false, right: false, upRight: false, upLeft: false, downRight: false, downLeft: false }
           }));
+          this.garden.unlockedPlants = storedData.unlockedPlants || 1;
           this.recomputeAllBorders();
         }
       } catch (e) {
@@ -292,8 +299,10 @@ export default {
         :dirtPrice="dirtPrice"
         :isBuyingDirt="garden.isBuyingDirt"
         :selectedPlant="garden.selectedPlant"
+        :unlockedPlants="garden.unlockedPlants"
         @plantSelected="onPlantSelected"
         @dirtSelected="onDirtSelected"
+        @plantUnlocked="onPlantUnlocked"
       />
     </div>
   </main>
