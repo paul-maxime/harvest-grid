@@ -48,8 +48,17 @@ export default {
         }
       }
     },
-    isOwned(pos: Coord, owned: Coord[]): boolean {
-      return owned.filter((c) => c.x === pos.x && c.y === pos.y).length > 0;
+    getGround(pos: Coord, owned: UnlockedCell[]): HTMLImageElement {
+      const tile = owned.filter((c) => c.x === pos.x && c.y === pos.y)[0];
+      if (tile) {
+        const suffix = `${tile.borders.up ? 0 : 1}-${tile.borders.down ? 0 : 1}-${tile.borders.left ? 0 : 1}-${tile.borders.right ? 0 : 1}-0-0-0-0`;
+        console.log('EARTH-' + suffix);
+        if (Object.keys(this.images).includes('EARTH-' + suffix)) {
+          return this.images['EARTH-' + suffix];
+        }
+        return this.images['EARTH'];
+      }
+      return this.images['EMPTY'];
     },
     getGardenSquare(): number {
       return 16 * ZOOM_LEVELS[this.zoomIdx];
@@ -84,8 +93,8 @@ export default {
         for (let x = (this.canvas.width / 2 - gardenSquare / 2) % gardenSquare + intPosition.x % gardenSquare - gardenSquare * 2; x < this.canvas.width; x += gardenSquare) {
           for (let y = (this.canvas.height / 2 - gardenSquare / 2) % gardenSquare + intPosition.y % gardenSquare - gardenSquare * 2; y < this.canvas.height; y += gardenSquare) {
             const curPos: Coord = { x: Math.floor((x - intPosition.x + gardenSquare / 2 - this.canvas.width / 2) / gardenSquare), y: Math.floor((y - intPosition.y + gardenSquare / 2 - this.canvas.height / 2) / gardenSquare) };
-            const owned = this.isOwned(curPos, this.garden.unlocked);
-            ctx.drawImage(this.images[owned ? 'EARTH' : 'EMPTY'], x, y, gardenSquare, gardenSquare);
+            const ground = this.getGround(curPos, this.garden.unlocked);
+            ctx.drawImage(ground, x, y, gardenSquare, gardenSquare);
           }
         }
         for (const plant of this.garden.plants) {
