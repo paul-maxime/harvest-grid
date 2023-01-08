@@ -26,4 +26,9 @@ type Garden = {
   unlocked: Coord[],
   isBuyingDirt: boolean,
   selectedPlant: PlantType | undefined,
+  selectedCell: {
+    pos: Coord | null,
+    isBuyable: boolean,
+    isHarvestable: boolean,
+  }
 }

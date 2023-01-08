@@ -14,6 +14,11 @@ export default {
       ],
       isBuyingDirt: false,
       selectedPlant: undefined,
+      selectedCell: {
+        pos: null,
+        isBuyable: false,
+        isHarvestable: false,
+      }
     };
     return {
       garden,
@@ -21,7 +26,6 @@ export default {
       pendingTime: 0,
       updateInterval: 0,
       dirtPrice: 0,
-      mouseCell: null as Coord | null,
     };
   },
   mounted() {
@@ -82,23 +86,39 @@ export default {
       }
     },
     onGardenHover(pos: Coord) {
-      if (this.mouseCell && this.mouseCell.x === pos.x && this.mouseCell.y === pos.y) return;
-      this.mouseCell = pos;
+      if (this.garden.selectedCell.pos &&
+        this.garden.selectedCell.pos.x === pos.x &&
+        this.garden.selectedCell.pos.y === pos.y) return;
+
+      this.garden.selectedCell.pos = pos;
+      this.garden.selectedCell.isBuyable = false;
+      this.garden.selectedCell.isHarvestable = false;
+
+      const plant = this.garden.plants.find(p => p.x === pos.x && p.y === pos.y);
+      if (plant) {
+        this.garden.selectedCell.isHarvestable = plant.harvestable;
+        return;
+      }
+
       const unlocked = this.garden.unlocked.some(p => p.x === pos.x && p.y === pos.y);
       if (unlocked) {
         this.dirtPrice = 0;
         return;
       }
+
       const buyable = this.garden.unlocked.some(p => Math.abs(p.x - pos.x) + Math.abs(p.y - pos.y) === 1);
       if (!buyable) {
         this.dirtPrice = -1;
         return;
       }
+      this.garden.selectedCell.isBuyable = true;
       this.dirtPrice = (Math.abs(pos.x) + Math.abs(pos.y)) * 10;
     },
     onGardenLeave() {
       this.dirtPrice = -2;
-      this.mouseCell = null;
+      this.garden.selectedCell.pos = null;
+      this.garden.selectedCell.isBuyable = false;
+      this.garden.selectedCell.isHarvestable = false;
     },
     plantClick(plant: GardenPlant) {
       console.log("Click on plant", plant);
