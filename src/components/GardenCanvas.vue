@@ -5,6 +5,7 @@ import { PLANTS, IMAGES } from "@/Plants";
 type CanvasVariables = {
   zoomIdx: number,
   position: Coord,
+  mousePosition?: Coord,
   downPosition?: Coord,
   dragPosition?: Coord,
   canvas?: HTMLCanvasElement,
@@ -17,6 +18,7 @@ export default {
     return {
       zoomIdx: 4,
       position: { x: 0, y: 0 },
+      mousePosition: { x: 0, y: 0 },
       dragPosition: undefined,
       canvas: undefined,
       images: {}
@@ -44,7 +46,7 @@ export default {
     },
     drawGarden() {
       if (this.canvas) {
-        const ctx = this.canvas.getContext("2d")!;
+        const ctx = this.canvas.getContext("2d", { willReadFrequently : true })!;
         ctx.imageSmoothingEnabled = false;
         const gardenSquare: number = this.getGardenSquare();
         //const cs = getComputedStyle(canvas);
@@ -53,10 +55,23 @@ export default {
         for (let x = (this.canvas.width / 2 - gardenSquare / 2) % gardenSquare + this.position.x % gardenSquare - gardenSquare * 2; x < this.canvas.width; x += gardenSquare) {
           for (let y = (this.canvas.height / 2 - gardenSquare / 2) % gardenSquare + this.position.y % gardenSquare - gardenSquare * 2; y < this.canvas.height; y += gardenSquare) {
             const curPos: Coord = { x: Math.floor((x - this.position.x + gardenSquare / 2 - this.canvas.width / 2) / gardenSquare), y: Math.floor((y - this.position.y + gardenSquare / 2 - this.canvas.height / 2) / gardenSquare) };
-            ctx.drawImage(this.images[this.isOwned(curPos, this.garden.unlocked) ? 'EARTH' : 'EMPTY'], x, y, gardenSquare, gardenSquare);
+            const owned = this.isOwned(curPos, this.garden.unlocked);
+            ctx.drawImage(this.images[owned ? 'EARTH' : 'EMPTY'], x, y, gardenSquare, gardenSquare);
             const plant = this.garden.plants.filter((p) => p.x === curPos.x && p.y === curPos.y)[0];
             if (plant) {
               ctx.drawImage(this.images[PLANTS.filter((p) => p.name === plant.type)[0].steps[plant.currentStep]], x, y, gardenSquare, gardenSquare);
+            }
+            if (this.garden.selectedPlant !== undefined && this.mousePosition !== undefined && this.mousePosition.x === curPos.x && this.mousePosition.y === curPos.y) {
+              const image = this.images[this.garden.selectedPlant.steps[0]];
+              ctx.drawImage(image, x, y, gardenSquare, gardenSquare);
+              if (!owned || plant) {
+                const test = ctx.getImageData(x, y, gardenSquare, gardenSquare);
+                for (let i = 0; i < Math.pow(gardenSquare, 2) * 4; i += 4) {
+                  test.data[i+1] = 0;
+                  test.data[i+2] = 0;
+                }
+                ctx.putImageData(test, x, y);
+              }
             }
           }
         }
@@ -67,28 +82,41 @@ export default {
       this.drawGarden();
     },
     onMouseDown(event: MouseEvent) {
-      this.downPosition = { x: event.x, y: event.y };
+      this.downPosition = { x: event.offsetX, y: event.offsetY };
       this.dragPosition = this.downPosition;
     },
     onMouseMove(event: MouseEvent) {
+      let redraw = false;
+      if (this.canvas) {
+        const gardenSquare = this.getGardenSquare();
+        const curPos = { x: Math.floor((event.offsetX - this.position.x + gardenSquare / 2 - this.canvas.width / 2) / gardenSquare), y: Math.floor((event.offsetY - this.position.y + gardenSquare / 2 - this.canvas.height / 2) / gardenSquare) };
+        redraw = this.garden.selectedPlant !== undefined && (curPos.x !== this.mousePosition?.x || curPos.y !== this.mousePosition?.y);
+        this.mousePosition = curPos;
+      }
       if (this.dragPosition) {
-        this.position.x += event.x - this.dragPosition.x;
-        this.position.y += event.y - this.dragPosition.y;
-        this.dragPosition = { x: event.x, y: event.y };
+        this.position.x += event.offsetX - this.dragPosition.x;
+        this.position.y += event.offsetY - this.dragPosition.y;
+        this.dragPosition = { x: event.offsetX, y: event.offsetY };
+        redraw = true;
+      }
+      if (redraw) {
         this.drawGarden();
       }
     },
     onMouseUp(event: MouseEvent) {
-      if (this.canvas && this.downPosition?.x === event.x && this.downPosition?.y === event.y) {
-        const gardenSquare = this.getGardenSquare();
-        const curPos: Coord = { x: Math.floor((event.x - this.position.x + gardenSquare / 2 - this.canvas.width / 2) / gardenSquare), y: Math.floor((event.y - this.position.y + gardenSquare / 2 - this.canvas.height / 2) / gardenSquare) };
-        this.$emit('gardenClick', curPos);
+      if (this.canvas && this.downPosition?.x === event.offsetX && this.downPosition?.y === event.offsetY) {
+        this.$emit('gardenClick', this.mousePosition);
       }
       this.dragPosition = undefined;
       this.downPosition = undefined;
     },
     onMouseLeave() {
       this.dragPosition = undefined;
+      this.mousePosition = undefined;
+      this.downPosition = undefined;
+      if (this.garden.selectedPlant) {
+        this.drawGarden();
+      }
     }
   },
   mounted() {
@@ -105,7 +133,6 @@ export default {
       immediate: true,
       deep: true,
       handler() {
-        console.log("Garden changed", this.garden);
         this.drawGarden();
       }
     }
