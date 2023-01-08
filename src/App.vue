@@ -151,6 +151,7 @@ export default {
       console.log("Click on plant", plant);
       const plantType = PLANTS.find(x => x.name === plant.type)!;
       if (plant.harvestable) {
+        playSound('SELL');
         this.garden.plants.splice(this.garden.plants.indexOf(plant), 1);
         this.garden.money += plantType.plantPrice;
         this.updateSelectedCell();
