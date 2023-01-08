@@ -96,9 +96,12 @@ export default {
             this.colorContext(ctx, this.garden.selectedCell.pos, gardenSquare, intPosition, this.garden.selectedCell.isBuyable ? [0, undefined, 0] : [undefined, 0, 0]);
           } else if (this.garden.selectedPlant) {
             const seed = this.images[this.garden.selectedPlant.steps[0]];
-            this.drawEntity(ctx, seed, this.garden.selectedCell.pos, gardenSquare, intPosition);
-            if (!this.garden.selectedCell.isPlantable) {
-              this.colorContext(ctx, this.garden.selectedCell.pos, gardenSquare, intPosition, [undefined, 0, 0]);
+            for (const segment of this.garden.selectedPlant.shape) {
+              const pos = { x: this.garden.selectedCell.pos.x + segment.x, y: this.garden.selectedCell.pos.y + segment.y };
+              this.drawEntity(ctx, seed, pos, gardenSquare, intPosition);
+              if (!this.garden.selectedCell.isPlantable) {
+                this.colorContext(ctx, pos, gardenSquare, intPosition, [undefined, 0, 0]);
+              }
             }
           }
         }
