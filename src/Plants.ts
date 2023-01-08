@@ -3,8 +3,8 @@ const PLANTS: PlantType[] = [
     name: "Weed",
     seedPrice: 0,
     plantPrice: 1,
-    steps: ["weed_seed", "weed_plant"],
-    ticksPerStep: 5,
+    steps: ["weed_seed", "weed_growth", "weed_plant"],
+    ticksPerStep: 3,
   },
   {
     name: "Fire Flower",
