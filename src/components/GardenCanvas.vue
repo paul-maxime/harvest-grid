@@ -58,19 +58,24 @@ export default {
             const owned = this.isOwned(curPos, this.garden.unlocked);
             ctx.drawImage(this.images[owned ? 'EARTH' : 'EMPTY'], x, y, gardenSquare, gardenSquare);
             const plant = this.garden.plants.filter((p) => p.x === curPos.x && p.y === curPos.y)[0];
-            if (plant) {
-              ctx.drawImage(this.images[PLANTS.filter((p) => p.name === plant.type)[0].steps[plant.currentStep]], x, y, gardenSquare, gardenSquare);
+            const plantRef = PLANTS.filter((p) => p.name === plant?.type)[0];
+            if (plantRef) {
+              ctx.drawImage(this.images[plantRef.steps[plant.currentStep]], x, y, gardenSquare, gardenSquare);
             }
-            if (this.garden.selectedPlant !== undefined && this.mousePosition !== undefined && this.mousePosition.x === curPos.x && this.mousePosition.y === curPos.y) {
-              const image = this.images[this.garden.selectedPlant.steps[0]];
-              ctx.drawImage(image, x, y, gardenSquare, gardenSquare);
-              if (!owned || plant) {
-                const test = ctx.getImageData(x, y, gardenSquare, gardenSquare);
-                for (let i = 0; i < Math.pow(gardenSquare, 2) * 4; i += 4) {
-                  test.data[i+1] = 0;
-                  test.data[i+2] = 0;
+            if (this.mousePosition !== undefined && this.mousePosition.x === curPos.x && this.mousePosition.y === curPos.y) {
+              if (plantRef && plantRef.steps.length - 1 === plant.currentStep) {
+                ctx.drawImage(this.images['SELL'], x, y, gardenSquare, gardenSquare);
+              } else if (this.garden.selectedPlant !== undefined) {
+                const image = this.images[this.garden.selectedPlant.steps[0]];
+                ctx.drawImage(image, x, y, gardenSquare, gardenSquare);
+                if (!owned || plant) {
+                  const test = ctx.getImageData(x, y, gardenSquare, gardenSquare);
+                  for (let i = 0; i < Math.pow(gardenSquare, 2) * 4; i += 4) {
+                    test.data[i+1] = 0;
+                    test.data[i+2] = 0;
+                  }
+                  ctx.putImageData(test, x, y);
                 }
-                ctx.putImageData(test, x, y);
               }
             }
           }
@@ -104,7 +109,7 @@ export default {
       }
     },
     onMouseUp(event: MouseEvent) {
-      if (this.canvas && this.downPosition?.x === event.offsetX && this.downPosition?.y === event.offsetY) {
+      if (this.canvas && this.downPosition && Math.abs(this.downPosition.x - event.offsetX) < 10 && Math.abs(this.downPosition.y - event.offsetY) < 10) {
         this.$emit('gardenClick', this.mousePosition);
       }
       this.dragPosition = undefined;

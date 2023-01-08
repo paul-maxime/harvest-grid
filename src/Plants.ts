@@ -18,6 +18,7 @@ const PLANTS: PlantType[] = [
 const IMAGES = new Map<string, string>();
 IMAGES.set("EARTH", "sprites/earth_grid.png");
 IMAGES.set("EMPTY", "sprites/empty_grid.png");
+IMAGES.set("SELL", "sprites/sell_icon.png");
 PLANTS.flatMap(x => x.steps).forEach(x => { IMAGES.set(x, `sprites/${x}.png`); });
 
 export { PLANTS, IMAGES };
