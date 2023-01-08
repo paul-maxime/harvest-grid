@@ -14,6 +14,7 @@ type CanvasVariables = {
   canvasSize: number
 }
 const ZOOM_LEVELS: number[] = [2, 3, 4, 5];
+const MOUSE_LENIENCE: number = 5;
 
 export default {
   data(): CanvasVariables {
@@ -76,10 +77,10 @@ export default {
               ctx.drawImage(this.images[plantRef.steps[plant.currentStep]], x, y, gardenSquare, gardenSquare);
             }
             if (this.garden.selectedCell.pos?.x === curPos.x && this.garden.selectedCell.pos?.y === curPos.y) {
-              if (this.garden.isBuyingDirt) {
-                this.colorContext(ctx, x, y, gardenSquare, gardenSquare, this.garden.selectedCell.isBuyable ? [0, undefined, 0] : [undefined, 0, 0])
-              } else if (this.garden.selectedCell.isHarvestable) {
+              if (this.garden.selectedCell.isHarvestable) {
                 ctx.drawImage(this.images['SELL'], x, y, gardenSquare, gardenSquare);
+              } else if (this.garden.isBuyingDirt) {
+                this.colorContext(ctx, x, y, gardenSquare, gardenSquare, this.garden.selectedCell.isBuyable ? [0, undefined, 0] : [undefined, 0, 0])
               } else if (this.garden.selectedPlant !== undefined) {
                 const image = this.images[this.garden.selectedPlant.steps[0]];
                 ctx.drawImage(image, x, y, gardenSquare, gardenSquare);
@@ -110,7 +111,7 @@ export default {
         this.mousePosition = curPos;
         this.$emit('gardenHover', this.mousePosition);
       }
-      if (this.dragPosition) {
+      if (this.dragPosition && this.downPosition && (Math.abs(this.downPosition.x - event.offsetX) >= MOUSE_LENIENCE || Math.abs(this.downPosition.y - event.offsetY) >= MOUSE_LENIENCE)) {
         this.position.x += event.offsetX - this.dragPosition.x;
         this.position.y += event.offsetY - this.dragPosition.y;
         this.dragPosition = { x: event.offsetX, y: event.offsetY };
@@ -121,7 +122,7 @@ export default {
       }
     },
     onMouseUp(event: MouseEvent) {
-      if (this.canvas && this.downPosition && Math.abs(this.downPosition.x - event.offsetX) < 10 && Math.abs(this.downPosition.y - event.offsetY) < 10) {
+      if (this.canvas && this.downPosition && Math.abs(this.downPosition.x - event.offsetX) < MOUSE_LENIENCE && Math.abs(this.downPosition.y - event.offsetY) < MOUSE_LENIENCE) {
         this.$emit('gardenClick', this.mousePosition);
       }
       this.dragPosition = undefined;
