@@ -13,7 +13,7 @@ export default {
       money: 100,
       plants: [],
       unlocked: [
-        { x: 0, y: 0 },
+        { x: 0, y: 0, borders: { up: false, down: false, left: false, right: false, upRight: false, upLeft: false, downRight: false, downLeft: false } },
       ],
       isBuyingDirt: false,
       selectedPlant: undefined,
@@ -197,10 +197,25 @@ export default {
         this.garden.unlocked.push({
           x: pos.x,
           y: pos.y,
+          borders: { up: false, down: false, left: false, right: false, upRight: false, upLeft: false, downRight: false, downLeft: false },
         });
+        this.recomputeAllBorders();
         this.updateSelectedCell();
         this.save();
       }
+    },
+    recomputeAllBorders() {
+      this.garden.unlocked.forEach(unlocked => {
+        unlocked.borders.up = this.garden.unlocked.some(p => p.x === unlocked.x && p.y === unlocked.y - 1);
+        unlocked.borders.down = this.garden.unlocked.some(p => p.x === unlocked.x && p.y === unlocked.y + 1);
+        unlocked.borders.left = this.garden.unlocked.some(p => p.x === unlocked.x - 1 && p.y === unlocked.y);
+        unlocked.borders.right = this.garden.unlocked.some(p => p.x === unlocked.x + 1 && p.y === unlocked.y);
+        unlocked.borders.upLeft = this.garden.unlocked.some(p => p.x === unlocked.x - 1 && p.y === unlocked.y - 1);
+        unlocked.borders.upRight = this.garden.unlocked.some(p => p.x === unlocked.x + 1 && p.y === unlocked.y - 1);
+        unlocked.borders.downLeft = this.garden.unlocked.some(p => p.x === unlocked.x - 1 && p.y === unlocked.y + 1);
+        unlocked.borders.downRight = this.garden.unlocked.some(p => p.x === unlocked.x + 1 && p.y === unlocked.y + 1);
+      });
+      console.log(this.garden.unlocked);
     },
     saveIfRequired() {
       const elapsed = Date.now() - this.lastSave;
@@ -211,8 +226,9 @@ export default {
       const json = JSON.stringify({
         money: this.garden.money,
         plants: this.garden.plants,
-        unlocked: this.garden.unlocked,
+        unlocked: this.garden.unlocked.map(p => ({ x: p.x, y: p.y })),
       });
+      console.log(json);
       const compressed = pako.deflate(new TextEncoder().encode(json));
       localStorage.setItem("harvest-save", base64.bytesToBase64(compressed));
     },
@@ -226,7 +242,11 @@ export default {
           const storedData = JSON.parse(storedJson);
           this.garden.money = storedData.money;
           this.garden.plants = storedData.plants;
-          this.garden.unlocked = storedData.unlocked;
+          this.garden.unlocked = storedData.unlocked.map((p: Coord) => ({
+            ...p,
+            borders: { up: false, down: false, left: false, right: false, upRight: false, upLeft: false, downRight: false, downLeft: false }
+          }));
+          this.recomputeAllBorders();
         }
       } catch (e) {
         console.error("Could not load the save", e);

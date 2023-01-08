@@ -12,19 +12,30 @@ type PlantType = {
   shape: Coord[],
 };
 
-type GardenPlant = {
+type GardenPlant = Coord & {
   type: string,
-  x: number,
-  y: number,
   currentStep: number,
   ticks: number,
   harvestable: boolean,
 }
 
+type UnlockedCell = Coord & {
+  borders: {
+    up: boolean,
+    down: boolean,
+    left: boolean,
+    right: boolean,
+    upRight: boolean,
+    upLeft: boolean,
+    downRight: boolean,
+    downLeft: boolean,
+  }
+}
+
 type Garden = {
   money: number,
   plants: GardenPlant[],
-  unlocked: Coord[],
+  unlocked: UnlockedCell[],
   isBuyingDirt: boolean,
   selectedPlant: PlantType | undefined,
   selectedCell: {
