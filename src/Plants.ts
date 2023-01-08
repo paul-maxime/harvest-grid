@@ -91,6 +91,7 @@ IMAGES.set("EARTH-0-0-0-0-1-1-1-0", "sprites/earth-0-0-0-0-1-1-1-0.png");
 IMAGES.set("EARTH-0-0-0-0-1-1-0-1", "sprites/earth-0-0-0-0-1-1-0-1.png");
 IMAGES.set("EARTH-0-0-0-0-1-0-1-1", "sprites/earth-0-0-0-0-1-0-1-1.png");
 IMAGES.set("EARTH-0-0-0-0-0-1-1-1", "sprites/earth-0-0-0-0-0-1-1-1.png");
+IMAGES.set("EARTH-0-0-0-0-1-1-1-1", "sprites/earth-0-0-0-0-1-1-1-1.png");
 IMAGES.set("EARTH-0-0-0-0-1-1-0-0", "sprites/earth-0-0-0-0-1-1-0-0.png");
 IMAGES.set("EARTH-0-0-0-0-1-0-1-0", "sprites/earth-0-0-0-0-1-0-1-0.png");
 IMAGES.set("EARTH-0-0-0-0-1-0-0-1", "sprites/earth-0-0-0-0-1-0-0-1.png");
