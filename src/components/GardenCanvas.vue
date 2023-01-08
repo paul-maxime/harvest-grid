@@ -101,7 +101,7 @@ export default {
       if (this.canvas) {
         const gardenSquare = this.getGardenSquare();
         const curPos = { x: Math.floor((event.offsetX - this.position.x + gardenSquare / 2 - this.canvas.width / 2) / gardenSquare), y: Math.floor((event.offsetY - this.position.y + gardenSquare / 2 - this.canvas.height / 2) / gardenSquare) };
-        redraw = this.garden.selectedPlant !== undefined && (curPos.x !== this.mousePosition?.x || curPos.y !== this.mousePosition?.y);
+        redraw = (curPos.x !== this.mousePosition?.x || curPos.y !== this.mousePosition?.y);
         this.mousePosition = curPos;
         this.$emit('gardenHover', this.mousePosition);
       }
