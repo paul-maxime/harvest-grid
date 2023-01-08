@@ -57,6 +57,7 @@ export default {
     },
     tickPlants() {
       let growth = false;
+      let harvestable = false;
       for (const plant of this.garden.plants) {
         const plantType = PLANTS.find(x => x.name === plant.type)!;
         if (plant.harvestable) continue;
@@ -67,10 +68,13 @@ export default {
           plant.ticks = 0;
           if (plant.currentStep === plantType.steps.length - 1) {
             plant.harvestable = true;
+            harvestable = true;
           }
         }
       }
-      if (growth) {
+      if (harvestable) {
+        playSound('WHISTLE');
+      } else if (growth) {
         playSound('POP');
       }
       this.updateSelectedCell();
