@@ -74,7 +74,7 @@ export default {
         }
       }
       if (harvestable) {
-        playSound('WHISTLE');
+        playSound('POUF');
       } else if (growth) {
         playSound('POP');
       }
