@@ -50,14 +50,18 @@ export default {
     getGardenSquare(): number {
       return 16 * ZOOM_LEVELS[this.zoomIdx];
     },
+    colorContext(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, mask: (number | undefined)[]) {
+      const imgData = ctx.getImageData(x, y, width, height);
+      for (let i = 0; i < width * height * 4; i++) {
+        imgData.data[i] = mask[i % 4] ?? imgData.data[i];
+      }
+      ctx.putImageData(imgData, x, y);
+    },
     drawGarden() {
       if (this.canvas) {
         const ctx = this.canvas.getContext("2d", { willReadFrequently : true })!;
         ctx.imageSmoothingEnabled = false;
         const gardenSquare: number = this.getGardenSquare();
-        //const cs = getComputedStyle(canvas);
-        //const size: {width: number, height: number} = {width: parseInt(cs.getPropertyValue('width')), height: parseInt(cs.getPropertyValue('height'))};
-        //console.log(size);
         for (let x = (this.canvas.width / 2 - gardenSquare / 2) % gardenSquare + this.position.x % gardenSquare - gardenSquare * 2; x < this.canvas.width; x += gardenSquare) {
           for (let y = (this.canvas.height / 2 - gardenSquare / 2) % gardenSquare + this.position.y % gardenSquare - gardenSquare * 2; y < this.canvas.height; y += gardenSquare) {
             const curPos: Coord = { x: Math.floor((x - this.position.x + gardenSquare / 2 - this.canvas.width / 2) / gardenSquare), y: Math.floor((y - this.position.y + gardenSquare / 2 - this.canvas.height / 2) / gardenSquare) };
@@ -68,19 +72,16 @@ export default {
             if (plantRef) {
               ctx.drawImage(this.images[plantRef.steps[plant.currentStep]], x, y, gardenSquare, gardenSquare);
             }
-            if (this.mousePosition !== undefined && this.mousePosition.x === curPos.x && this.mousePosition.y === curPos.y) {
-              if (plantRef && plantRef.steps.length - 1 === plant.currentStep) {
+            if (this.garden.selectedCell.pos?.x === curPos.x && this.garden.selectedCell.pos?.y === curPos.y) {
+              if (this.garden.isBuyingDirt) {
+                this.colorContext(ctx, x, y, gardenSquare, gardenSquare, this.garden.selectedCell.isBuyable ? [0, undefined, 0] : [undefined, 0, 0])
+              } else if (this.garden.selectedCell.isHarvestable) {
                 ctx.drawImage(this.images['SELL'], x, y, gardenSquare, gardenSquare);
               } else if (this.garden.selectedPlant !== undefined) {
                 const image = this.images[this.garden.selectedPlant.steps[0]];
                 ctx.drawImage(image, x, y, gardenSquare, gardenSquare);
                 if (!owned || plant) {
-                  const test = ctx.getImageData(x, y, gardenSquare, gardenSquare);
-                  for (let i = 0; i < Math.pow(gardenSquare, 2) * 4; i += 4) {
-                    test.data[i+1] = 0;
-                    test.data[i+2] = 0;
-                  }
-                  ctx.putImageData(test, x, y);
+                  this.colorContext(ctx, x, y, gardenSquare, gardenSquare, [undefined, 0, 0])
                 }
               }
             }
