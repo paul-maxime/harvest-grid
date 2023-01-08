@@ -9,24 +9,30 @@ type CanvasVariables = {
   downPosition?: Coord,
   dragPosition?: Coord,
   canvas?: HTMLCanvasElement,
-  images: { [id: string]: HTMLImageElement }
+  images: { [id: string]: HTMLImageElement },
+  canvasSize: number
 }
-const ZOOM_LEVELS: number[] = [1, 2, 3, 4, 5];
+const ZOOM_LEVELS: number[] = [2, 3, 4, 5];
 
 export default {
   data(): CanvasVariables {
     return {
-      zoomIdx: 4,
+      zoomIdx: 3,
       position: { x: 0, y: 0 },
       mousePosition: { x: 0, y: 0 },
       dragPosition: undefined,
       canvas: undefined,
-      images: {}
+      images: {},
+      canvasSize: 512
     }
   },
   methods: {
+    setCanvasSize() {
+      this.canvasSize = Math.min(document.documentElement.clientWidth, document.documentElement.clientHeight) - 16;
+    },
     load() {
       this.canvas = (<HTMLCanvasElement>this.$refs.garden);
+      this.setCanvasSize();
       for (const [key, value] of IMAGES) {
         const imgObj = new Image();
         imgObj.src = value;
@@ -122,10 +128,17 @@ export default {
       if (this.garden.selectedPlant) {
         this.drawGarden();
       }
+    },
+    onResize() {
+      this.setCanvasSize();
     }
   },
   mounted() {
+    window.addEventListener('resize', this.onResize);
     this.load();
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.onResize);
   },
   props: {
     garden: {
@@ -147,15 +160,13 @@ export default {
 
 <template>
   <canvas @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseup="onMouseUp" @mouseleave="onMouseLeave"
-    @wheel="onWheel" ref="garden" width="512" height="512">
+    @wheel="onWheel" ref="garden" width="512" height="512" :style="{ width: canvasSize + 'px', height: canvasSize + 'px' }">
     Garden
   </canvas>
 </template>
 
 <style scoped>
 canvas {
-  width: 512px;
-  height: 512px;
   image-rendering: pixelated;
 }
 </style>
