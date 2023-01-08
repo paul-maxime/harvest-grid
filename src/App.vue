@@ -27,11 +27,13 @@ export default {
       pendingTime: 0,
       updateInterval: 0,
       dirtPrice: 0,
+      lastSave: 0,
     };
   },
   mounted() {
-    this.lastUpdate = Date.now(),
+    this.lastUpdate = Date.now();
     this.updateInterval = setInterval(() => this.update(), 250);
+    this.load();
   },
   unmounted() {
     if (this.updateInterval) {
@@ -63,6 +65,7 @@ export default {
         }
       }
       this.updateSelectedCell();
+      this.saveIfRequired();
     },
     onPlantSelected(plantType: PlantType) {
       if (this.garden.selectedPlant === plantType) {
@@ -138,6 +141,7 @@ export default {
         this.garden.plants.splice(this.garden.plants.indexOf(plant), 1);
         this.garden.money += plantType.plantPrice;
         this.updateSelectedCell();
+        this.save();
       }
     },
     dirtClick(pos: Coord) {
@@ -158,6 +162,7 @@ export default {
         harvestable: false,
       });
       this.updateSelectedCell();
+      this.save();
     },
     voidClick(pos: Coord) {
       console.log("Click on void", pos);
@@ -172,7 +177,31 @@ export default {
           y: pos.y,
         });
         this.updateSelectedCell();
+        this.save();
       }
+    },
+    saveIfRequired() {
+      const elapsed = Date.now() - this.lastSave;
+      if (elapsed >= 10000) this.save();
+    },
+    save() {
+      this.lastSave = Date.now();
+      localStorage.setItem("harvest-save", JSON.stringify({
+        money: this.garden.money,
+        plants: this.garden.plants,
+        unlocked: this.garden.unlocked,
+      }));
+    },
+    load() {
+      this.lastSave = Date.now();
+      const storedJson = localStorage.getItem("harvest-save");
+      if (storedJson) {
+        const storedData = JSON.parse(storedJson);
+        this.garden.money = storedData.money;
+        this.garden.plants = storedData.plants;
+        this.garden.unlocked = storedData.unlocked;
+      }
+      this.updateSelectedCell();
     },
   },
   computed: {
