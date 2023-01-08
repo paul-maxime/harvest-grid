@@ -29,6 +29,7 @@ type Garden = {
   selectedCell: {
     pos: Coord | null,
     isBuyable: boolean,
+    isPlantable: boolean,
     isHarvestable: boolean,
   }
 }

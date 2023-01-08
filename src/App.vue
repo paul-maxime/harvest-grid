@@ -17,6 +17,7 @@ export default {
       selectedCell: {
         pos: null,
         isBuyable: false,
+        isPlantable: false,
         isHarvestable: false,
       }
     };
@@ -97,6 +98,7 @@ export default {
     updateSelectedCell() {
       const pos = this.garden.selectedCell.pos;
       this.garden.selectedCell.isBuyable = false;
+      this.garden.selectedCell.isPlantable = false;
       this.garden.selectedCell.isHarvestable = false;
 
       if (!pos) {
@@ -112,6 +114,7 @@ export default {
       const unlocked = this.garden.unlocked.some(p => p.x === pos.x && p.y === pos.y);
       if (unlocked) {
         this.dirtPrice = 0;
+        this.garden.selectedCell.isPlantable = true;
         return;
       }
 
@@ -172,6 +175,13 @@ export default {
       }
     },
   },
+  computed: {
+    isGameClickable() {
+      return (this.garden.selectedPlant && this.garden.selectedCell.isPlantable) ||
+        (this.garden.selectedCell.isBuyable && this.garden.isBuyingDirt) ||
+        this.garden.selectedCell.isHarvestable;
+    }
+  }
 }
 </script>
 
@@ -183,6 +193,7 @@ export default {
         @gardenClick="onGardenClick"
         @gardenHover="onGardenHover"
         @mouseleave="onGardenLeave"
+        :class="{ 'garden-clickable': isGameClickable }"
       />
     </div>
     <div class="column-right">
@@ -208,5 +219,8 @@ main {
   justify-content: center;
   flex-wrap: wrap;
   gap: 8px;
+}
+.garden-clickable {
+  cursor: pointer;
 }
 </style>
