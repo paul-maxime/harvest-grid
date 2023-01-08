@@ -3,6 +3,7 @@ import type { PropType } from "vue";
 import { PLANTS, IMAGES } from "@/Plants";
 
 type CanvasVariables = {
+  isLoaded: boolean,
   zoomIdx: number,
   position: Coord,
   mousePosition?: Coord,
@@ -17,13 +18,14 @@ const ZOOM_LEVELS: number[] = [2, 3, 4, 5];
 export default {
   data(): CanvasVariables {
     return {
+      isLoaded: false,
       zoomIdx: 3,
       position: { x: 0, y: 0 },
       mousePosition: { x: 0, y: 0 },
       dragPosition: undefined,
       canvas: undefined,
       images: {},
-      canvasSize: 512
+      canvasSize: 512,
     }
   },
   methods: {
@@ -39,6 +41,7 @@ export default {
         imgObj.onload = () => {
           this.images[key] = imgObj;
           if (Object.keys(this.images).length === IMAGES.size) {
+            this.isLoaded = true;
             this.drawGarden();
           }
         }
@@ -154,7 +157,13 @@ export default {
       immediate: true,
       deep: true,
       handler() {
-        this.drawGarden();
+        try {
+          if (this.isLoaded) {
+            this.drawGarden();
+          }
+        } catch (e) {
+          console.error(e);
+        }
       }
     }
   },
