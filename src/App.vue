@@ -162,10 +162,13 @@ export default {
   </main>
 </template>
 
-<style scoped>
+<style>
+body {
+  margin-bottom: 0px;
+}
 main {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 8px;
 }
 </style>

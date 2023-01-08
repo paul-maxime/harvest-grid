@@ -91,6 +91,7 @@ export default {
     onWheel(event: WheelEvent) {
       this.zoomIdx = Math.min(ZOOM_LEVELS.length - 1, Math.max(0, this.zoomIdx - Math.sign(event.deltaY)));
       this.drawGarden();
+      event.preventDefault();
     },
     onMouseDown(event: MouseEvent) {
       this.downPosition = { x: event.offsetX, y: event.offsetY };
