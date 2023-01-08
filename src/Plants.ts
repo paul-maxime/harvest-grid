@@ -1,12 +1,4 @@
-type Plant = {
-  name: string,
-  seedPrice: number,
-  plantPrice: number,
-  steps: string[],
-  timePerStep: number,
-};
-
-const PLANTS: Plant[] = [
+const PLANTS: PlantType[] = [
   {
     name: "Weed",
     seedPrice: 0,

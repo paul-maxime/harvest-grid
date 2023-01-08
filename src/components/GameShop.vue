@@ -1,7 +1,6 @@
 <script lang="ts">
+import type { PropType } from "vue";
 import { PLANTS } from "@/Plants";
-
-
 
 export default {
   data() {
@@ -11,10 +10,10 @@ export default {
   },
   props: {
     money: Number,
-    selectedPlant: String,
+    selectedPlant: Object as PropType<PlantType>,
   },
   methods: {
-    onSelectedPlant(type: string) {
+    onSelectedPlant(type: PlantType) {
       this.$emit("plantSelected", type);
     }
   },
@@ -24,7 +23,7 @@ export default {
 <template>
   <div class="shop-container">
     <h2>Shop</h2>
-    <div v-for="plant of PLANTS" :key="plant.name" class="shop-plant" v-bind:class="{ 'shop-plant-selected': selectedPlant == plant.name }" @click="onSelectedPlant(plant.name)">
+    <div v-for="plant of PLANTS" :key="plant.name" class="shop-plant" v-bind:class="{ 'shop-plant-selected': selectedPlant === plant }" @click="onSelectedPlant(plant)">
       <div class="shop-plant-icon" style="z-index: 1;">
         <img :src="`sprites/earth_grid.png`" style="position: absolute; z-index: -1;">
         <img :src="`sprites/${plant.steps[0]}.png`" style="">
@@ -52,6 +51,7 @@ h2 {
   border: 1px solid black;
   margin-bottom: 4px;
   cursor: pointer;
+  user-select: none;
 }
 .shop-plant-selected {
   background-color: #a0a0a0;

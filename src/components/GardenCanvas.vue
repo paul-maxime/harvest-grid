@@ -106,6 +106,7 @@ export default {
       deep: true,
       handler() {
         console.log("Garden changed", this.garden);
+        this.drawGarden();
       }
     }
   },

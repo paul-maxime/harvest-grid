@@ -3,6 +3,14 @@ type Coord = {
   y: number,
 }
 
+type PlantType = {
+  name: string,
+  seedPrice: number,
+  plantPrice: number,
+  steps: string[],
+  timePerStep: number,
+};
+
 type GardenPlant = {
   type: string,
   x: number,
@@ -14,5 +22,5 @@ type Garden = {
   money: number,
   plants: GardenPlant[],
   unlocked: Coord[],
-  selectedPlant: string | undefined,
+  selectedPlant: PlantType | undefined,
 }
