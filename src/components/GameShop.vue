@@ -116,7 +116,7 @@ h2 {
 }
 table {
   border-collapse: collapse;
-  min-width: 196px;
+  min-width: 220px;
 }
 table tr {
   cursor: pointer;
