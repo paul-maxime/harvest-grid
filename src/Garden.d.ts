@@ -8,7 +8,7 @@ type PlantType = {
   seedPrice: number,
   plantPrice: number,
   steps: string[],
-  timePerStep: number,
+  ticksPerStep: number,
 };
 
 type GardenPlant = {
@@ -16,6 +16,7 @@ type GardenPlant = {
   x: number,
   y: number,
   currentStep: number,
+  ticks: number,
 }
 
 type Garden = {

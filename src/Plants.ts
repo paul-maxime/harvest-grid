@@ -4,14 +4,14 @@ const PLANTS: PlantType[] = [
     seedPrice: 0,
     plantPrice: 1,
     steps: ["weed_seed", "weed_plant"],
-    timePerStep: 10,
+    ticksPerStep: 5,
   },
   {
     name: "Fire Flower",
     seedPrice: 10,
     plantPrice: 20,
     steps: ["fireflower_seed", "fireflower_plant"],
-    timePerStep: 5,
+    ticksPerStep: 10,
   },
 ];
 

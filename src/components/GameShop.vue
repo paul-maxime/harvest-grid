@@ -23,6 +23,7 @@ export default {
 <template>
   <div class="shop-container">
     <h2>Shop</h2>
+    <p class="shop-money">{{ money }}<img src="sprites/currency.png"></p>
     <div v-for="plant of PLANTS" :key="plant.name" class="shop-plant" v-bind:class="{ 'shop-plant-selected': selectedPlant === plant }" @click="onSelectedPlant(plant)">
       <div class="shop-plant-icon" style="z-index: 1;">
         <img :src="`sprites/earth_grid.png`" style="position: absolute; z-index: -1;">
@@ -44,6 +45,15 @@ export default {
 h2 {
   text-align: center;
   margin: 0px;
+}
+.shop-money {
+  margin-top: 0px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 1.2em;
+}
+.shop-money img {
+  margin-left: 3px;
 }
 .shop-plant {
   display: flex;
