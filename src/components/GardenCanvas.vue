@@ -54,12 +54,21 @@ export default {
     getGardenSquare(): number {
       return 16 * ZOOM_LEVELS[this.zoomIdx];
     },
-    colorContext(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, mask: (number | undefined)[]) {
-      const imgData = ctx.getImageData(x, y, width, height);
-      for (let i = 0; i < width * height * 4; i++) {
+    getCanvasPosition(pos: Coord, size: number, view: Coord): Coord {
+      return { x: pos.x * size + view.x - size / 2 + (this.canvas?.width ?? 1) / 2, y: pos.y * size + view.y - size / 2 + (this.canvas?.height ?? 1) / 2 };
+    },
+    colorContext(ctx: CanvasRenderingContext2D, pos: Coord, size: number, view: Coord, mask: (number | undefined)[]) {
+      const canvasPos: Coord = this.getCanvasPosition(pos, size, view);
+      const imgData = ctx.getImageData(canvasPos.x, canvasPos.y, size, size);
+      for (let i = 0; i < size * size * 4; i++) {
         imgData.data[i] = mask[i % 4] ?? imgData.data[i];
       }
-      ctx.putImageData(imgData, x, y);
+      ctx.putImageData(imgData, canvasPos.x, canvasPos.y);
+    },
+    drawEntity(ctx: CanvasRenderingContext2D, img: HTMLImageElement, pos: Coord, size: number, view: Coord) {
+      const canvasPos: Coord = this.getCanvasPosition(pos, size, view);
+      // TODO: not draw entity outside of screen
+      ctx.drawImage(img, canvasPos.x, canvasPos.y, size, size);
     },
     drawGarden() {
       if (this.canvas) {
@@ -72,23 +81,24 @@ export default {
             const curPos: Coord = { x: Math.floor((x - intPosition.x + gardenSquare / 2 - this.canvas.width / 2) / gardenSquare), y: Math.floor((y - intPosition.y + gardenSquare / 2 - this.canvas.height / 2) / gardenSquare) };
             const owned = this.isOwned(curPos, this.garden.unlocked);
             ctx.drawImage(this.images[owned ? 'EARTH' : 'EMPTY'], x, y, gardenSquare, gardenSquare);
-            const plant = this.garden.plants.filter((p) => p.x === curPos.x && p.y === curPos.y)[0];
-            const plantRef = PLANTS.filter((p) => p.name === plant?.type)[0];
-            if (plantRef) {
-              ctx.drawImage(this.images[plantRef.steps[plant.currentStep]], x, y, gardenSquare, gardenSquare);
-            }
-            if (this.garden.selectedCell.pos?.x === curPos.x && this.garden.selectedCell.pos?.y === curPos.y) {
-              if (this.garden.selectedCell.isHarvestable) {
-                ctx.drawImage(this.images['SELL'], x, y, gardenSquare, gardenSquare);
-              } else if (this.garden.isBuyingDirt) {
-                this.colorContext(ctx, x, y, gardenSquare, gardenSquare, this.garden.selectedCell.isBuyable ? [0, undefined, 0] : [undefined, 0, 0])
-              } else if (this.garden.selectedPlant !== undefined) {
-                const image = this.images[this.garden.selectedPlant.steps[0]];
-                ctx.drawImage(image, x, y, gardenSquare, gardenSquare);
-                if (!owned || plant) {
-                  this.colorContext(ctx, x, y, gardenSquare, gardenSquare, [undefined, 0, 0])
-                }
-              }
+          }
+        }
+        for (const plant of this.garden.plants) {
+          const plantRef = PLANTS.filter((p) => p.name === plant?.type)[0];
+          if (plantRef) {
+            this.drawEntity(ctx, this.images[plantRef.steps[plant.currentStep]], plant, gardenSquare, intPosition);
+          }
+        }
+        if (this.garden.selectedCell.pos) {
+          if (this.garden.selectedCell.isHarvestable) {
+            this.drawEntity(ctx, this.images['SELL'], this.garden.selectedCell.pos, gardenSquare, intPosition);
+          } else if (this.garden.isBuyingDirt) {
+            this.colorContext(ctx, this.garden.selectedCell.pos, gardenSquare, intPosition, this.garden.selectedCell.isBuyable ? [0, undefined, 0] : [undefined, 0, 0]);
+          } else if (this.garden.selectedPlant) {
+            const seed = this.images[this.garden.selectedPlant.steps[0]];
+            this.drawEntity(ctx, seed, this.garden.selectedCell.pos, gardenSquare, intPosition);
+            if (!this.garden.selectedCell.isPlantable) {
+              this.colorContext(ctx, this.garden.selectedCell.pos, gardenSquare, intPosition, [undefined, 0, 0]);
             }
           }
         }
