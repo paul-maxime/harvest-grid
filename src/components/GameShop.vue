@@ -145,7 +145,8 @@ table tr td {
 }
 .name-cell {
   text-align: left;
-  padding: 6px;
+  padding-left: 6px;
+  padding-right: 6px;
 }
 .price-cell {
   text-align: right;

@@ -107,7 +107,7 @@ export default {
       const plant = this.garden.plants.find(p => p.x === pos.x && p.y === pos.y);
       const unlocked = this.garden.unlocked.some(p => p.x === pos.x && p.y === pos.y);
       if (plant) {
-        this.plantClick(plant);
+        this.plantClick(pos, plant);
       } else if (unlocked) {
         this.dirtClick(pos);
       } else {
@@ -132,6 +132,10 @@ export default {
         return;
       }
 
+      if (this.canPlacePlantAt(pos, this.garden.selectedPlant)) {
+        this.garden.selectedCell.isPlantable = true;
+      }
+
       const plant = this.garden.plants.find(p => p.x === pos.x && p.y === pos.y);
       if (plant) {
         this.garden.selectedCell.isHarvestable = plant.harvestable;
@@ -141,7 +145,6 @@ export default {
       const unlocked = this.garden.unlocked.some(p => p.x === pos.x && p.y === pos.y);
       if (unlocked) {
         this.dirtPrice = 0;
-        this.garden.selectedCell.isPlantable = this.canPlacePlantAt(pos, this.garden.selectedPlant);
         return;
       }
 
@@ -158,7 +161,7 @@ export default {
       this.garden.selectedCell.pos = null;
       this.updateSelectedCell();
     },
-    plantClick(plant: GardenPlant) {
+    plantClick(pos: Coord, plant: GardenPlant) {
       const plantType = PLANTS.find(x => x.name === plant.type)!;
       if (plant.harvestable) {
         playSound('SELL');
@@ -166,6 +169,8 @@ export default {
         this.garden.money += plantType.plantPrice;
         this.updateSelectedCell();
         this.save();
+      } else if (this.canPlacePlantAt(pos, this.garden.selectedPlant)) {
+        this.dirtClick(pos);
       }
     },
     dirtClick(pos: Coord) {
@@ -208,6 +213,10 @@ export default {
       });
     },
     voidClick(pos: Coord) {
+      if (this.canPlacePlantAt(pos, this.garden.selectedPlant)) {
+        this.dirtClick(pos);
+        return;
+      }
       if (!this.garden.isBuyingDirt) return;
       const price = (Math.abs(pos.x) + Math.abs(pos.y)) * 10;
       if (this.garden.money < price) return;
