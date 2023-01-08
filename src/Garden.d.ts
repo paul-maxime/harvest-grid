@@ -17,6 +17,7 @@ type GardenPlant = {
   y: number,
   currentStep: number,
   ticks: number,
+  harvestable: boolean,
 }
 
 type Garden = {

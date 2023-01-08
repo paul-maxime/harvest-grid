@@ -44,11 +44,14 @@ export default {
     tickPlants() {
       for (const plant of this.garden.plants) {
         const plantType = PLANTS.find(x => x.name === plant.type)!;
-        if (plant.currentStep >= plantType.steps.length - 1) continue;
+        if (plant.harvestable) continue;
         plant.ticks += 1;
         if (plant.ticks === plantType.ticksPerStep) {
           plant.currentStep += 1;
           plant.ticks = 0;
+          if (plant.currentStep === plantType.steps.length - 1) {
+            plant.harvestable = true;
+          }
         }
       }
     },
@@ -73,7 +76,7 @@ export default {
     plantClick(plant: GardenPlant) {
       console.log("Click on plant", plant);
       const plantType = PLANTS.find(x => x.name === plant.type)!;
-      if (plant.currentStep === plantType.steps.length - 1) {
+      if (plant.harvestable) {
         this.garden.plants.splice(this.garden.plants.indexOf(plant), 1);
         this.garden.money += plantType.plantPrice;
       }
@@ -93,6 +96,7 @@ export default {
         y: pos.y,
         currentStep: 0,
         ticks: 0,
+        harvestable: false,
       });
     },
     voidClick(pos: Coord) {
