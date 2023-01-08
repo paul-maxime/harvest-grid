@@ -10,11 +10,16 @@ export default {
   },
   props: {
     money: Number,
+    dirtPrice: Number,
+    isBuyingDirt: Boolean,
     selectedPlant: Object as PropType<PlantType>,
   },
   methods: {
-    onSelectedPlant(type: PlantType) {
+    plantSelected(type: PlantType) {
       this.$emit("plantSelected", type);
+    },
+    dirtSelected() {
+      this.$emit("dirtSelected");
     }
   },
 }
@@ -24,9 +29,21 @@ export default {
   <div class="shop-container">
     <h2>Shop</h2>
     <p class="shop-money">{{ money }}<img src="sprites/currency.png"></p>
-    <div v-for="plant of PLANTS" :key="plant.name" class="shop-plant" v-bind:class="{ 'shop-plant-selected': selectedPlant === plant }" @click="onSelectedPlant(plant)">
+    <div class="shop-plant" v-bind:class="{ 'shop-plant-selected': isBuyingDirt }" @click="dirtSelected()">
+      <div class="shop-plant-icon">
+        <img src="sprites/earth_grid.png">
+      </div>
+      <div class="shop-plant-price">
+        Dirt
+        <span v-if="!isBuyingDirt">(variable price)</span>
+        <span v-else-if="dirtPrice === 0">(already bought)</span>
+        <span v-else-if="dirtPrice === -1">(too far)</span>
+        <span v-else>({{ dirtPrice }}<img src="sprites/currency.png">)</span>
+      </div>
+    </div>
+    <div v-for="plant of PLANTS" :key="plant.name" class="shop-plant" v-bind:class="{ 'shop-plant-selected': selectedPlant === plant }" @click="plantSelected(plant)">
       <div class="shop-plant-icon" style="z-index: 1;">
-        <img :src="`sprites/earth_grid.png`" style="position: absolute; z-index: -1;">
+        <img src="sprites/earth_grid.png" style="position: absolute; z-index: -1;">
         <img :src="`sprites/${plant.steps[0]}.png`" style="">
       </div>
       <div class="shop-plant-price">

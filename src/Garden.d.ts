@@ -24,5 +24,6 @@ type Garden = {
   money: number,
   plants: GardenPlant[],
   unlocked: Coord[],
+  isBuyingDirt: boolean,
   selectedPlant: PlantType | undefined,
 }

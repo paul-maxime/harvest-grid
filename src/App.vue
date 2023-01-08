@@ -7,11 +7,12 @@ export default {
   components: { GameShop, GardenCanvas },
   data() {
     const garden: Garden = {
-      money: 0,
+      money: 100,
       plants: [],
       unlocked: [
         { x: 0, y: 0 },
       ],
+      isBuyingDirt: false,
       selectedPlant: undefined,
     };
     return {
@@ -19,6 +20,8 @@ export default {
       lastUpdate: 0,
       pendingTime: 0,
       updateInterval: 0,
+      dirtPrice: 0,
+      mouseCell: { x: 0, y: 0 },
     };
   },
   mounted() {
@@ -61,6 +64,11 @@ export default {
       } else {
         this.garden.selectedPlant = plantType;
       }
+      this.garden.isBuyingDirt = false;
+    },
+    onDirtSelected() {
+      this.garden.isBuyingDirt = !this.garden.isBuyingDirt;
+      this.garden.selectedPlant = undefined;
     },
     onGardenClick(pos: Coord) {
       const plant = this.garden.plants.find(p => p.x === pos.x && p.y === pos.y);
@@ -72,6 +80,21 @@ export default {
       } else {
         this.voidClick(pos);
       }
+    },
+    onGardenHover(pos: Coord) {
+      if (this.mouseCell.x === pos.x && this.mouseCell.y === pos.y) return;
+      this.mouseCell = pos;
+      const unlocked = this.garden.unlocked.some(p => p.x === pos.x && p.y === pos.y);
+      if (unlocked) {
+        this.dirtPrice = 0;
+        return;
+      }
+      const buyable = this.garden.unlocked.some(p => Math.abs(p.x - pos.x) + Math.abs(p.y - pos.y) === 1);
+      if (!buyable) {
+        this.dirtPrice = -1;
+        return;
+      }
+      this.dirtPrice = (Math.abs(pos.x) + Math.abs(pos.y)) * 10;
     },
     plantClick(plant: GardenPlant) {
       console.log("Click on plant", plant);
@@ -101,7 +124,12 @@ export default {
     },
     voidClick(pos: Coord) {
       console.log("Click on void", pos);
-      if (this.garden.unlocked.some(p => Math.abs(p.x - pos.x) + Math.abs(p.y - pos.y) === 1)) {
+      if (!this.garden.isBuyingDirt) return;
+      const price = (Math.abs(pos.x) + Math.abs(pos.y)) * 10;
+      if (this.garden.money < price) return;
+      this.garden.money -= price;
+      const buyable = this.garden.unlocked.some(p => Math.abs(p.x - pos.x) + Math.abs(p.y - pos.y) === 1);
+      if (buyable) {
         this.garden.unlocked.push({
           x: pos.x,
           y: pos.y,
@@ -115,10 +143,21 @@ export default {
 <template>
   <main>
     <div class="column-left">
-      <GardenCanvas :garden="garden" @gardenClick="onGardenClick" />
+      <GardenCanvas
+        :garden="garden"
+        @gardenClick="onGardenClick"
+        @gardenHover="onGardenHover"
+      />
     </div>
     <div class="column-right">
-      <GameShop :money="garden.money" :selectedPlant="garden.selectedPlant" @plantSelected="onPlantSelected" />
+      <GameShop
+        :money="garden.money"
+        :dirtPrice="dirtPrice"
+        :isBuyingDirt="garden.isBuyingDirt"
+        :selectedPlant="garden.selectedPlant"
+        @plantSelected="onPlantSelected"
+        @dirtSelected="onDirtSelected"
+      />
     </div>
   </main>
 </template>
