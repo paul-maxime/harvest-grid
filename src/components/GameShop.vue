@@ -34,8 +34,8 @@ export default {
         <img src="sprites/earth_grid.png">
       </div>
       <div class="shop-plant-price">
-        Dirt
-        <span v-if="!isBuyingDirt">(variable price)</span>
+        Dirt block<br>
+        <span v-if="!isBuyingDirt || dirtPrice === -2"></span>
         <span v-else-if="dirtPrice === 0">(already bought)</span>
         <span v-else-if="dirtPrice === -1">(too far)</span>
         <span v-else>({{ dirtPrice }}<img src="sprites/currency.png">)</span>

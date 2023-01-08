@@ -21,7 +21,7 @@ export default {
       pendingTime: 0,
       updateInterval: 0,
       dirtPrice: 0,
-      mouseCell: { x: 0, y: 0 },
+      mouseCell: null as Coord | null,
     };
   },
   mounted() {
@@ -82,7 +82,7 @@ export default {
       }
     },
     onGardenHover(pos: Coord) {
-      if (this.mouseCell.x === pos.x && this.mouseCell.y === pos.y) return;
+      if (this.mouseCell && this.mouseCell.x === pos.x && this.mouseCell.y === pos.y) return;
       this.mouseCell = pos;
       const unlocked = this.garden.unlocked.some(p => p.x === pos.x && p.y === pos.y);
       if (unlocked) {
@@ -95,6 +95,10 @@ export default {
         return;
       }
       this.dirtPrice = (Math.abs(pos.x) + Math.abs(pos.y)) * 10;
+    },
+    onGardenLeave() {
+      this.dirtPrice = -2;
+      this.mouseCell = null;
     },
     plantClick(plant: GardenPlant) {
       console.log("Click on plant", plant);
@@ -147,6 +151,7 @@ export default {
         :garden="garden"
         @gardenClick="onGardenClick"
         @gardenHover="onGardenHover"
+        @mouseleave="onGardenLeave"
       />
     </div>
     <div class="column-right">
@@ -164,10 +169,12 @@ export default {
 
 <style>
 body {
+  background-color: #E0E0E0;
   margin-bottom: 0px;
 }
 main {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 8px;
 }
