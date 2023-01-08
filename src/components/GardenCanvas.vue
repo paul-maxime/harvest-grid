@@ -54,8 +54,13 @@ export default {
     getGardenSquare(): number {
       return 16 * ZOOM_LEVELS[this.zoomIdx];
     },
+    getRealLifePosition(pos: Coord) {
+      const size: number = this.getGardenSquare();
+      const view = { x: Math.floor(this.position.x), y: Math.floor(this.position.y) };
+      return { x: (pos.x * size + view.x + this.canvas!.width / 2) / this.canvas!.width * this.canvasSize, y: (pos.y * size + view.y + this.canvas!.height / 2) / this.canvas!.height * this.canvasSize };
+    },
     getCanvasPosition(pos: Coord, size: number, view: Coord): Coord {
-      return { x: pos.x * size + view.x - size / 2 + (this.canvas?.width ?? 1) / 2, y: pos.y * size + view.y - size / 2 + (this.canvas?.height ?? 1) / 2 };
+      return { x: pos.x * size + view.x - size / 2 + this.canvas!.width / 2, y: pos.y * size + view.y - size / 2 + this.canvas!.height / 2 };
     },
     colorContext(ctx: CanvasRenderingContext2D, pos: Coord, size: number, view: Coord, mask: (number | undefined)[]) {
       const canvasPos: Coord = this.getCanvasPosition(pos, size, view);
