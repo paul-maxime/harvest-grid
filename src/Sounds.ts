@@ -8,7 +8,7 @@ SOUNDS.set('POUF', ['pouf-1.ogg', 'pouf-2.ogg']);
 export default function(name: string) {
     let sound = SOUNDS.get(name);
     if (sound) {
-        const audio = new Audio(`/sounds/${sound[Math.floor(Math.random() * sound.length)]}`);
+        const audio = new Audio(`./sounds/${sound[Math.floor(Math.random() * sound.length)]}`);
         audio.play();
     }
 };
