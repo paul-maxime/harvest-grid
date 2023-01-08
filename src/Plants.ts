@@ -13,8 +13,8 @@ const PLANTS: PlantType[] = [
     seedPrice: 10,
     plantPrice: 20,
     unlockPrice: 1,
-    steps: ["fireflower_seed", "fireflower_plant"],
-    ticksPerStep: 10,
+    steps: ["fireflower_seed", "fireflower_growth", "fireflower_plant"],
+    ticksPerStep: 5,
     shape: [{ x: 0, y: 0 }],
   },
   {
