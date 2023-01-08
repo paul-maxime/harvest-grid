@@ -5,6 +5,7 @@ import * as base64 from "byte-base64";
 import GameShop from './components/GameShop.vue'
 import GardenCanvas from './components/GardenCanvas.vue';
 import { PLANTS } from "@/Plants";
+import playSound from '@/Sounds';
 
 export default {
   components: { GameShop, GardenCanvas },
@@ -55,17 +56,22 @@ export default {
       }
     },
     tickPlants() {
+      let growth = false;
       for (const plant of this.garden.plants) {
         const plantType = PLANTS.find(x => x.name === plant.type)!;
         if (plant.harvestable) continue;
         plant.ticks += 1;
         if (plant.ticks === plantType.ticksPerStep) {
+          growth = true;
           plant.currentStep += 1;
           plant.ticks = 0;
           if (plant.currentStep === plantType.steps.length - 1) {
             plant.harvestable = true;
           }
         }
+      }
+      if (growth) {
+        playSound('POP');
       }
       this.updateSelectedCell();
       this.saveIfRequired();
