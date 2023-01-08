@@ -39,13 +39,13 @@ export default {
 
     <table>
       <tr @click="dirtSelected()" v-bind:class="{ 'shop-plant-selected': isBuyingDirt }">
-        <td>
+        <td class="icon-cell">
           <div class="shop-plant-icon">
             <img src="/sprites/earth_grid.png">
           </div>
         </td>
-        <td class="name-cell" :colspan="isBuyingDirt && dirtPrice && dirtPrice > 0 ? 1 : 2">
-          Dirt block<br>
+        <td class="name-cell" :colspan="isBuyingDirt && dirtPrice && dirtPrice > 0 ? 3 : 4">
+          Island tile<br>
           <span v-if="!isBuyingDirt || dirtPrice === -2"></span>
           <span v-else-if="dirtPrice === 0">(already bought)</span>
           <span v-else-if="dirtPrice === -1">(too far)</span>
@@ -55,7 +55,7 @@ export default {
         </td>
       </tr>
       <tr v-for="plant of PLANTS.slice(0, unlockedPlants)" :key="plant.name" @click="plantSelected(plant)">
-        <td>
+        <td class="icon-cell">
           <div class="shop-plant-icon">
             <img src="/sprites/earth_grid.png" style="position: absolute; z-index: -1;">
             <img :src="`sprites/${plant.steps[0]}.png`" style="">
@@ -67,15 +67,21 @@ export default {
         <td class="price-cell" v-bind:class="{ 'shop-plant-selected': selectedPlant === plant }">
           {{ plant.seedPrice }}<img src="/sprites/currency.png">
         </td>
+        <td class="price-cell" v-bind:class="{ 'shop-plant-selected': selectedPlant === plant }">
+          {{ plant.shape.length }}<img src="/sprites/earth_grid.png" style="height: 12px;">
+        </td>
+        <td class="price-cell" v-bind:class="{ 'shop-plant-selected': selectedPlant === plant }">
+          {{ plant.ticksPerStep * (plant.steps.length - 1) }}<img src="/sprites/hourglass.png" style="height: 12px;">
+        </td>
       </tr>
       <tr v-if="unlockedPlants < PLANTS.length">
-        <td>
+        <td class="icon-cell">
           <div class="shop-plant-icon">
             <img src="/sprites/earth_grid.png" style="position: absolute; z-index: -1;">
             <img :src="`sprites/secret.png`" style="">
           </div>
         </td>
-        <td class="name-cell" colspan="2" @click="unlockNextPlant()">
+        <td class="name-cell" colspan="4" @click="unlockNextPlant()">
           Unlock for {{ PLANTS[unlockedPlants].unlockPrice }}<img src="/sprites/currency.png">
         </td>
       </tr>
@@ -105,6 +111,7 @@ h2 {
 }
 table {
   border-collapse: collapse;
+  min-width: 196px;
 }
 table tr {
   cursor: pointer;
@@ -119,6 +126,9 @@ table tr td {
 }
 .shop-plant-selected {
   background-color: #a0a0a0 !important;
+}
+.icon-cell {
+  width: 48px;
 }
 .shop-plant-icon {
   width: 48px;

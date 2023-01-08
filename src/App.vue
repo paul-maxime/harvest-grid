@@ -99,6 +99,7 @@ export default {
       if (this.garden.money >= next.unlockPrice) {
         this.garden.money -= next.unlockPrice;
         this.garden.unlockedPlants += 1;
+        playSound("SELL");
         this.save();
       }
     },

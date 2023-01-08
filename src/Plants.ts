@@ -1,6 +1,6 @@
 const PLANTS: PlantType[] = [
   {
-    name: "Weed",
+    name: "Herba",
     seedPrice: 0,
     plantPrice: 1,
     unlockPrice: 0,
@@ -9,22 +9,31 @@ const PLANTS: PlantType[] = [
     shape: [{ x: 0, y: 0 }],
   },
   {
-    name: "Fireflower",
-    seedPrice: 10,
-    plantPrice: 20,
-    unlockPrice: 1,
+    name: "Igniflos",
+    seedPrice: 3,
+    plantPrice: 8,
+    unlockPrice: 3,
     steps: ["fireflower_seed", "fireflower_growth", "fireflower_plant"],
     ticksPerStep: 5,
     shape: [{ x: 0, y: 0 }],
   },
   {
-    name: "Test line 1",
-    seedPrice: 1,
-    plantPrice: 2,
-    unlockPrice: 2,
-    steps: ["weed_seed", "weed_growth", "weed_plant"],
-    ticksPerStep: 2,
+    name: "Longifel",
+    seedPrice: 10,
+    plantPrice: 8,
+    unlockPrice: 10,
+    steps: ["longifel_seed", "longifel_step1", "longifel_step2", "longifel_final"],
+    ticksPerStep: 5,
     shape: [{ x: -1, y: 0 }, { x: 0, y: 0 }, { x: 1, y: 0 }],
+  },
+  {
+    name: "Glacruxiem",
+    seedPrice: 30,
+    plantPrice: 10,
+    unlockPrice: 5,
+    steps: ["glacruxiem_seed", "glacruxiem_step1", "glacruxiem_step2", "glacruxiem_final"],
+    ticksPerStep: 5,
+    shape: [{ x: 0, y: -1 }, { x: 0, y: 1 }, { x: 0, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 0 }],
   },
   {
     name: "Test line 2",
@@ -45,22 +54,13 @@ const PLANTS: PlantType[] = [
     shape: [
       { x: -1, y: -1 }, { x: 0, y: -1 }, { x: 1, y: -1 },
       { x: -1, y: 0 }, { x: 1, y: 0 },
-      { x: -1, y: 1 }, { x: 0, y: 1 }, { x: 1, y: 1 }
+      { x: -1, y: 1 }, { x: 0, y: 1 }, { x: 1, y: 1 },
     ],
-  },
-  {
-    name: "Test plus",
-    seedPrice: 1,
-    plantPrice: 2,
-    unlockPrice: 5,
-    steps: ["weed_seed", "weed_growth", "weed_plant"],
-    ticksPerStep: 2,
-    shape: [{ x: 0, y: -1 }, { x: 0, y: 1 }, { x: 0, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 0 }],
   },
 ];
 
 PLANTS.forEach(plant => {
-  const requiredTicks = plant.ticksPerStep * plant.steps.length;
+  const requiredTicks = plant.ticksPerStep * (plant.steps.length - 1);
   const benefits = plant.plantPrice * plant.shape.length - plant.seedPrice;
   console.log(plant.name, benefits / requiredTicks, "gold per ticks");
 });
