@@ -169,6 +169,7 @@ export default {
       if (!this.canPlacePlantAt(pos, this.garden.selectedPlant)) {
         return;
       }
+      playSound('FROUF');
       this.garden.money -= this.garden.selectedPlant.seedPrice;
       for (const relative of this.garden.selectedPlant.shape) {
         const point = { x: pos.x + relative.x, y: pos.y + relative.y };
