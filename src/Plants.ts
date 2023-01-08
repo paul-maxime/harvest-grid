@@ -36,6 +36,19 @@ const PLANTS: PlantType[] = [
     shape: [{ x: 0, y: -1 }, { x: 0, y: 1 }, { x: 0, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 0 }],
   },
   {
+    name: "Doughnut",
+    seedPrice: 50,
+    plantPrice: 15,
+    unlockPrice: 4,
+    steps: ["doughnut_seed", "doughnut_growth", "doughnut_plant"],
+    ticksPerStep: 12,
+    shape: [
+      { x: -1, y: -1 }, { x: 0, y: -1 }, { x: 1, y: -1 },
+      { x: -1, y: 0 }, { x: 1, y: 0 },
+      { x: -1, y: 1 }, { x: 0, y: 1 }, { x: 1, y: 1 },
+    ],
+  },
+  {
     name: "Test line 2",
     seedPrice: 1,
     plantPrice: 2,
@@ -43,19 +56,6 @@ const PLANTS: PlantType[] = [
     steps: ["weed_seed", "weed_growth", "weed_plant"],
     ticksPerStep: 2,
     shape: [{ x: 0, y: -1 }, { x: 0, y: 0 }, { x: 0, y: 1 }],
-  },
-  {
-    name: "Test donut",
-    seedPrice: 1,
-    plantPrice: 2,
-    unlockPrice: 4,
-    steps: ["weed_seed", "weed_growth", "weed_plant"],
-    ticksPerStep: 2,
-    shape: [
-      { x: -1, y: -1 }, { x: 0, y: -1 }, { x: 1, y: -1 },
-      { x: -1, y: 0 }, { x: 1, y: 0 },
-      { x: -1, y: 1 }, { x: 0, y: 1 }, { x: 1, y: 1 },
-    ],
   },
 ];
 
