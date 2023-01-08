@@ -29,6 +29,11 @@ export default {
       this.$emit("plantUnlocked");
     },
   },
+  computed: {
+    visibleColumns() {
+      return this.unlockedPlants === 1 ? 2 : this.unlockedPlants === 2 ? 3 : 4;
+    }
+  }
 }
 </script>
 
@@ -44,13 +49,13 @@ export default {
             <img src="/sprites/earth_grid.png">
           </div>
         </td>
-        <td class="name-cell" :colspan="isBuyingDirt && dirtPrice && dirtPrice > 0 ? 3 : 4">
+        <td class="name-cell" :colspan="isBuyingDirt && dirtPrice && dirtPrice > 0 ? (visibleColumns === 4 ? visibleColumns - 2 : visibleColumns - 1) : visibleColumns">
           Island tile<br>
           <span v-if="!isBuyingDirt || dirtPrice === -2"></span>
           <span v-else-if="dirtPrice === 0">(already bought)</span>
           <span v-else-if="dirtPrice === -1">(too far)</span>
         </td>
-        <td class="price-cell" v-if="isBuyingDirt && dirtPrice && dirtPrice > 0">
+        <td class="price-cell" v-if="isBuyingDirt && dirtPrice && dirtPrice > 0" :colspan="visibleColumns === 4 ? 2 : 1">
           {{ dirtPrice }}<img src="/sprites/currency.png">
         </td>
       </tr>
@@ -67,11 +72,11 @@ export default {
         <td class="price-cell" v-bind:class="{ 'shop-plant-selected': selectedPlant === plant }">
           {{ plant.seedPrice }}<img src="/sprites/currency.png">
         </td>
-        <td class="price-cell" v-bind:class="{ 'shop-plant-selected': selectedPlant === plant }">
-          {{ plant.shape.length }}<img src="/sprites/earth_grid.png" style="height: 12px;">
-        </td>
-        <td class="price-cell" v-bind:class="{ 'shop-plant-selected': selectedPlant === plant }">
+        <td class="price-cell" v-bind:class="{ 'shop-plant-selected': selectedPlant === plant }" v-if="visibleColumns >= 3">
           {{ plant.ticksPerStep * (plant.steps.length - 1) }}<img src="/sprites/hourglass.png" style="height: 12px;">
+        </td>
+        <td class="price-cell" v-bind:class="{ 'shop-plant-selected': selectedPlant === plant }" v-if="visibleColumns >= 4">
+          {{ plant.shape.length }}<img src="/sprites/earth_grid.png" style="height: 12px;">
         </td>
       </tr>
       <tr v-if="unlockedPlants < PLANTS.length">
@@ -81,7 +86,7 @@ export default {
             <img :src="`sprites/secret.png`" style="">
           </div>
         </td>
-        <td class="name-cell" colspan="4" @click="unlockNextPlant()">
+        <td class="name-cell" :colspan="visibleColumns" @click="unlockNextPlant()">
           Unlock for {{ PLANTS[unlockedPlants].unlockPrice }}<img src="/sprites/currency.png">
         </td>
       </tr>

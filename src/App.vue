@@ -219,6 +219,7 @@ export default {
           y: pos.y,
           borders: { up: false, down: false, left: false, right: false, upRight: false, upLeft: false, downRight: false, downLeft: false },
         });
+        playSound('FROUF');
         this.recomputeAllBorders();
         this.updateSelectedCell();
         this.save();
@@ -260,7 +261,7 @@ export default {
           const storedJson = new TextDecoder("utf-8").decode(uncompressed);
           const storedData = JSON.parse(storedJson);
           this.garden.money = storedData.money || 0;
-          this.garden.plants = storedData.plants || [];
+          this.garden.plants = (storedData.plants || []).filter((p: GardenPlant) => PLANTS.some(x => x.name === p.type && p.currentStep < x.steps.length));
           this.garden.unlocked = (storedData.unlocked || []).map((p: Coord) => ({
             ...p,
             borders: { up: false, down: false, left: false, right: false, upRight: false, upLeft: false, downRight: false, downLeft: false }
@@ -311,7 +312,12 @@ export default {
 </template>
 
 <style>
+@font-face {
+  font-family: 'ChivoMono-Regular';
+  src: url("assets/ChivoMono-Regular.ttf");
+}
 body {
+  font-family: "ChivoMono-Regular", "monospace";
   background-color: #E0E0E0;
   margin-bottom: 0px;
 }
