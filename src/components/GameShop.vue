@@ -28,27 +28,27 @@ export default {
 <template>
   <div class="shop-container">
     <h2>Shop</h2>
-    <p class="shop-money">{{ money }}<img src="./sprites/currency.png"></p>
+    <p class="shop-money">{{ money }}<img src="/sprites/currency.png"></p>
     <div class="shop-plant" v-bind:class="{ 'shop-plant-selected': isBuyingDirt }" @click="dirtSelected()">
       <div class="shop-plant-icon">
-        <img src="./sprites/earth_grid.png">
+        <img src="/sprites/earth_grid.png">
       </div>
       <div class="shop-plant-price">
         Dirt block<br>
         <span v-if="!isBuyingDirt || dirtPrice === -2"></span>
         <span v-else-if="dirtPrice === 0">(already bought)</span>
         <span v-else-if="dirtPrice === -1">(too far)</span>
-        <span v-else>({{ dirtPrice }}<img src="./sprites/currency.png">)</span>
+        <span v-else>({{ dirtPrice }}<img src="/sprites/currency.png">)</span>
       </div>
     </div>
     <div v-for="plant of PLANTS" :key="plant.name" class="shop-plant" v-bind:class="{ 'shop-plant-selected': selectedPlant === plant }" @click="plantSelected(plant)">
       <div class="shop-plant-icon" style="z-index: 1;">
-        <img src="./sprites/earth_grid.png" style="position: absolute; z-index: -1;">
+        <img src="/sprites/earth_grid.png" style="position: absolute; z-index: -1;">
         <img :src="`sprites/${plant.steps[0]}.png`" style="">
       </div>
       <div class="shop-plant-price">
         {{ plant.name }}
-        <span v-if="plant.seedPrice > 0">({{ plant.seedPrice }}<img src="./sprites/currency.png">)</span>
+        <span v-if="plant.seedPrice > 0">({{ plant.seedPrice }}<img src="/sprites/currency.png">)</span>
         <span v-else>(free)</span>
       </div>
     </div>
