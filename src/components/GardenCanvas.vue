@@ -66,9 +66,10 @@ export default {
         const ctx = this.canvas.getContext("2d", { willReadFrequently : true })!;
         ctx.imageSmoothingEnabled = false;
         const gardenSquare: number = this.getGardenSquare();
-        for (let x = (this.canvas.width / 2 - gardenSquare / 2) % gardenSquare + this.position.x % gardenSquare - gardenSquare * 2; x < this.canvas.width; x += gardenSquare) {
-          for (let y = (this.canvas.height / 2 - gardenSquare / 2) % gardenSquare + this.position.y % gardenSquare - gardenSquare * 2; y < this.canvas.height; y += gardenSquare) {
-            const curPos: Coord = { x: Math.floor((x - this.position.x + gardenSquare / 2 - this.canvas.width / 2) / gardenSquare), y: Math.floor((y - this.position.y + gardenSquare / 2 - this.canvas.height / 2) / gardenSquare) };
+        const intPosition = { x: Math.floor(this.position.x), y: Math.floor(this.position.y) };
+        for (let x = (this.canvas.width / 2 - gardenSquare / 2) % gardenSquare + intPosition.x % gardenSquare - gardenSquare * 2; x < this.canvas.width; x += gardenSquare) {
+          for (let y = (this.canvas.height / 2 - gardenSquare / 2) % gardenSquare + intPosition.y % gardenSquare - gardenSquare * 2; y < this.canvas.height; y += gardenSquare) {
+            const curPos: Coord = { x: Math.floor((x - intPosition.x + gardenSquare / 2 - this.canvas.width / 2) / gardenSquare), y: Math.floor((y - intPosition.y + gardenSquare / 2 - this.canvas.height / 2) / gardenSquare) };
             const owned = this.isOwned(curPos, this.garden.unlocked);
             ctx.drawImage(this.images[owned ? 'EARTH' : 'EMPTY'], x, y, gardenSquare, gardenSquare);
             const plant = this.garden.plants.filter((p) => p.x === curPos.x && p.y === curPos.y)[0];
