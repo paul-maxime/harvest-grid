@@ -61,6 +61,7 @@ export default {
           }
         }
       }
+      this.updateSelectedCell();
     },
     onPlantSelected(plantType: PlantType) {
       if (this.garden.selectedPlant === plantType) {
@@ -91,8 +92,16 @@ export default {
         this.garden.selectedCell.pos.y === pos.y) return;
 
       this.garden.selectedCell.pos = pos;
+      this.updateSelectedCell();
+    },
+    updateSelectedCell() {
+      const pos = this.garden.selectedCell.pos;
       this.garden.selectedCell.isBuyable = false;
       this.garden.selectedCell.isHarvestable = false;
+
+      if (!pos) {
+        return;
+      }
 
       const plant = this.garden.plants.find(p => p.x === pos.x && p.y === pos.y);
       if (plant) {
@@ -117,8 +126,7 @@ export default {
     onGardenLeave() {
       this.dirtPrice = -2;
       this.garden.selectedCell.pos = null;
-      this.garden.selectedCell.isBuyable = false;
-      this.garden.selectedCell.isHarvestable = false;
+      this.updateSelectedCell();
     },
     plantClick(plant: GardenPlant) {
       console.log("Click on plant", plant);
@@ -126,6 +134,7 @@ export default {
       if (plant.harvestable) {
         this.garden.plants.splice(this.garden.plants.indexOf(plant), 1);
         this.garden.money += plantType.plantPrice;
+        this.updateSelectedCell();
       }
     },
     dirtClick(pos: Coord) {
@@ -145,6 +154,7 @@ export default {
         ticks: 0,
         harvestable: false,
       });
+      this.updateSelectedCell();
     },
     voidClick(pos: Coord) {
       console.log("Click on void", pos);
@@ -158,6 +168,7 @@ export default {
           x: pos.x,
           y: pos.y,
         });
+        this.updateSelectedCell();
       }
     },
   },
