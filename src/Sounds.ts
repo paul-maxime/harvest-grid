@@ -1,5 +1,5 @@
 const SOUNDS = new Map<string, HTMLAudioElement | HTMLAudioElement[]>();
-SOUNDS.set('POP', [new Audio('sounds/pop-1.ogg'), new Audio('sounds/pop-2.ogg')]);
+SOUNDS.set('POP', [new Audio('sounds/pop-1.ogg'), new Audio('sounds/pop-2.ogg'), new Audio('sounds/petit-son.ogg')]);
 
 export default function(name: string) {
     let sound = SOUNDS.get(name);
