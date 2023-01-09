@@ -34,6 +34,7 @@ export default {
       updateInterval: 0,
       dirtPrice: 0,
       lastSave: 0,
+      exportedSaveData: "",
     };
   },
   mounted() {
@@ -277,6 +278,11 @@ export default {
     load() {
       this.lastSave = Date.now();
       const compressedData = localStorage.getItem("harvest-save");
+      if (compressedData) {
+        this.loadData(compressedData);
+      }
+    },
+    loadData(compressedData: string) {
       try {
         if (compressedData) {
           const uncompressed = pako.inflate(base64.base64ToBytes(compressedData));
@@ -289,12 +295,53 @@ export default {
             borders: { up: false, down: false, left: false, right: false, upRight: false, upLeft: false, downRight: false, downLeft: false }
           }));
           this.garden.unlockedPlants = storedData.unlockedPlants || 1;
+          this.updateSelectedCell();
           this.recomputeAllBorders();
+          return true;
         }
       } catch (e) {
         console.error("Could not load the save", e);
       }
-      this.updateSelectedCell();
+      return false;
+    },
+    exportSave() {
+      this.save();
+      this.exportedSaveData = localStorage.getItem("harvest-save") || "";
+      setTimeout(() => {
+        (<any>this.$refs.exportedInput).select();
+      }, 10);
+    },
+    closeExport() {
+      this.exportedSaveData = "";
+    },
+    importSave() {
+      const compressedData = prompt("Enter your save data");
+      if (compressedData) {
+        if (!this.loadData(compressedData.trim())) {
+          alert("Cannot load the save. Is it an invalid or corrupted save data?");
+        }
+      }
+    },
+    wipeSave() {
+      const sure = confirm("Are you sure? This will erase your save. There is no undo.");
+      if (sure !== true) return;
+      this.garden = {
+        money: 0,
+        plants: [],
+        unlocked: [
+          { x: 0, y: 0, borders: { up: false, down: false, left: false, right: false, upRight: false, upLeft: false, downRight: false, downLeft: false } },
+        ],
+        unlockedPlants: 1,
+        isBuyingDirt: false,
+        selectedPlant: undefined,
+        selectedCell: {
+          pos: null,
+          isBuyable: false,
+          isPlantable: false,
+          isHarvestable: false,
+        }
+      };
+      this.save();
     },
   },
   computed: {
@@ -331,6 +378,17 @@ export default {
         @dirtSelected="onDirtSelected"
         @plantUnlocked="onPlantUnlocked"
       />
+      <hr>
+      <div class="save-buttons">
+        <button @click="exportSave()">Export save</button>
+        <button @click="importSave()">Import save</button>
+        <button @click="wipeSave()">Wipe save</button>
+      </div>
+      <div v-if="exportedSaveData">
+        <textarea type="text" readonly ref="exportedInput" :value="exportedSaveData"></textarea>
+        <br>
+        <button @click="closeExport()">Close export</button>
+      </div>
     </div>
   </main>
 </template>
@@ -357,5 +415,11 @@ main {
 }
 .column-left {
   position: relative;
+}
+.save-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-bottom: 8px;
 }
 </style>

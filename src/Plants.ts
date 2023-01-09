@@ -73,15 +73,22 @@ const PLANTS: PlantType[] = [
   },
 ];
 
-PLANTS.forEach(plant => {
-  const requiredTicks = plant.ticksPerStep * (plant.steps.length - 1);
-  const benefits = plant.plantPrice * plant.shape.length - plant.seedPrice;
-  console.log(plant.name, benefits / requiredTicks, "gold per ticks");
-});
+// Uncomment when trying to balance the difficulty
+//
+// PLANTS.forEach(plant => {
+//   const requiredTicks = plant.ticksPerStep * (plant.steps.length - 1);
+//   const benefits = plant.plantPrice * plant.shape.length - plant.seedPrice;
+//   console.log(plant.name, benefits / requiredTicks, "gold per ticks");
+// });
 
+// Preload all images
 const IMAGES = new Map<string, string>();
 IMAGES.set("EARTH", "sprites/earth_grid.png");
 IMAGES.set("EMPTY", "sprites/empty_grid.png");
+IMAGES.set("SELL", "sprites/sell_icon.png");
+PLANTS.flatMap(x => x.steps).forEach(x => IMAGES.set(x, `sprites/${x}.png`));
+
+// God help us
 IMAGES.set("EARTH-0-0-0-0-0-0-0-0", "sprites/earth-0-0-0-0-0-0-0-0.png");
 IMAGES.set("EARTH-1-0-0-0-1-1-0-0", "sprites/earth-1-0-0-0-1-1-0-0.png");
 IMAGES.set("EARTH-0-1-0-0-0-0-1-1", "sprites/earth-0-1-0-0-0-0-1-1.png");
@@ -128,7 +135,5 @@ IMAGES.set("EARTH-1-0-1-0-1-1-1-1", "sprites/earth-1-0-1-0-1-1-1-1.png");
 IMAGES.set("EARTH-1-0-0-1-1-1-1-1", "sprites/earth-1-0-0-1-1-1-1-1.png");
 IMAGES.set("EARTH-0-1-1-0-1-1-1-1", "sprites/earth-0-1-1-0-1-1-1-1.png");
 IMAGES.set("EARTH-0-1-0-1-1-1-1-1", "sprites/earth-0-1-0-1-1-1-1-1.png");
-IMAGES.set("SELL", "sprites/sell_icon.png");
-PLANTS.flatMap(x => x.steps).forEach(x => { IMAGES.set(x, `sprites/${x}.png`); });
 
 export { PLANTS, IMAGES };
