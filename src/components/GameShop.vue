@@ -87,7 +87,7 @@ export default {
           </div>
         </td>
         <td class="name-cell" :colspan="visibleColumns" @click="unlockNextPlant()">
-          Unlock for {{ PLANTS[unlockedPlants].unlockPrice }}<img src="/sprites/currency.png">
+          Unlock for {{ PLANTS[unlockedPlants].seedPrice }}<img src="/sprites/currency.png">
         </td>
       </tr>
     </table>

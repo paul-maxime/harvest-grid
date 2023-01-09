@@ -84,6 +84,7 @@ export default {
       ctx.drawImage(img, canvasPos.x, canvasPos.y, size, size);
     },
     drawGarden() {
+      if (!this.isLoaded) return;
       if (this.canvas) {
         const ctx = this.canvas.getContext("2d", { willReadFrequently : true })!;
         ctx.imageSmoothingEnabled = false;
@@ -190,9 +191,7 @@ export default {
       deep: true,
       handler() {
         try {
-          if (this.isLoaded) {
-            this.drawGarden();
-          }
+          this.drawGarden();
         } catch (e) {
           console.error(e);
         }

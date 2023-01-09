@@ -7,7 +7,6 @@ type PlantType = {
   name: string,
   seedPrice: number,
   plantPrice: number,
-  unlockPrice: number,
   steps: string[],
   ticksPerStep: number,
   shape: Coord[],

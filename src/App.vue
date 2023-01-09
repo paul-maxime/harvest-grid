@@ -12,7 +12,7 @@ export default {
   components: { GameShop, GardenCanvas, EffectsManager },
   data() {
     const garden: Garden = {
-      money: 0,
+      money: 10000,
       plants: [],
       unlocked: [
         { x: 0, y: 0, borders: { up: false, down: false, left: false, right: false, upRight: false, upLeft: false, downRight: false, downLeft: false } },
@@ -98,8 +98,8 @@ export default {
     onPlantUnlocked() {
       if (this.garden.unlockedPlants >= PLANTS.length) return;
       const next = PLANTS[this.garden.unlockedPlants];
-      if (this.garden.money >= next.unlockPrice) {
-        this.garden.money -= next.unlockPrice;
+      if (this.garden.money >= next.seedPrice) {
+        this.garden.money -= next.seedPrice;
         this.garden.unlockedPlants += 1;
         playSound("SELL");
         this.save();
