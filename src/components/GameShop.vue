@@ -79,14 +79,14 @@ export default {
           {{ plant.shape.length }}<img src="/sprites/earth_grid.png" style="height: 12px;">
         </td>
       </tr>
-      <tr v-if="unlockedPlants < PLANTS.length">
+      <tr v-if="unlockedPlants < PLANTS.length" @click="unlockNextPlant()">
         <td class="icon-cell">
           <div class="shop-plant-icon">
             <img src="/sprites/earth_grid.png" style="position: absolute; z-index: -1;">
             <img :src="`sprites/secret.png`" style="">
           </div>
         </td>
-        <td class="name-cell" :colspan="visibleColumns" @click="unlockNextPlant()">
+        <td class="name-cell" :colspan="visibleColumns">
           Unlock for {{ PLANTS[unlockedPlants].unlockPrice }}<img src="/sprites/currency.png">
         </td>
       </tr>
