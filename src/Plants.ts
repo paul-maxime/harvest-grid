@@ -18,7 +18,7 @@ const PLANTS: PlantType[] = [
   {
     name: "Longifel",
     seedPrice: 12,
-    plantPrice: 8,
+    plantPrice: 15,
     steps: ["longifel_seed", "longifel_step1", "longifel_step2", "longifel_final"],
     ticksPerStep: 5,
     shape: [{ x: -1, y: 0 }, { x: 0, y: 0 }, { x: 1, y: 0 }],
@@ -26,7 +26,7 @@ const PLANTS: PlantType[] = [
   {
     name: "Quadcapsa",
     seedPrice: 25,
-    plantPrice: 18,
+    plantPrice: 50,
     steps: ["box_seed", "box_step1", "box_step2", "box_final"],
     ticksPerStep: 14,
     shape: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 0 }, { x: 1, y: 1 }],
@@ -34,7 +34,7 @@ const PLANTS: PlantType[] = [
   {
     name: "Skaltyus",
     seedPrice: 50,
-    plantPrice: 28,
+    plantPrice: 40,
     steps: ["cloud_seed", "cloud_step1", "cloud_step2", "cloud_final"],
     ticksPerStep: 7,
     shape: [{ x: 0, y: -1 }, { x: 0, y: 0 }, { x: 0, y: 1 }],
@@ -42,7 +42,7 @@ const PLANTS: PlantType[] = [
   {
     name: "Glacruxiem",
     seedPrice: 90,
-    plantPrice: 24,
+    plantPrice: 40,
     steps: ["glacruxiem_seed", "glacruxiem_step1", "glacruxiem_step2", "glacruxiem_final"],
     ticksPerStep: 5,
     shape: [{ x: 0, y: -1 }, { x: 0, y: 1 }, { x: 0, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 0 }],
@@ -50,7 +50,7 @@ const PLANTS: PlantType[] = [
   {
     name: "Viridipiou",
     seedPrice: 80,
-    plantPrice: 35,
+    plantPrice: 80,
     steps: ["viridipiou_seed", "viridipiou_step", "viridipiou_final"],
     ticksPerStep: 15,
     shape: [
@@ -62,7 +62,7 @@ const PLANTS: PlantType[] = [
   {
     name: "Doughnut",
     seedPrice: 120,
-    plantPrice: 22,
+    plantPrice: 75,
     steps: ["doughnut_seed", "doughnut_growth", "doughnut_plant"],
     ticksPerStep: 12,
     shape: [
@@ -78,7 +78,7 @@ const PLANTS: PlantType[] = [
 // PLANTS.forEach(plant => {
 //   const requiredTicks = plant.ticksPerStep * (plant.steps.length - 1);
 //   const benefits = plant.plantPrice * plant.shape.length - plant.seedPrice;
-//   console.log(plant.name, benefits / requiredTicks, "gold per ticks");
+//   console.log(benefits / requiredTicks / plant.shape.length, plant.name);
 // });
 
 // Preload all images
