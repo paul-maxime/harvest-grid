@@ -4,11 +4,12 @@ import * as base64 from "byte-base64";
 
 import GameShop from './components/GameShop.vue'
 import GardenCanvas from './components/GardenCanvas.vue';
+import EffectsManager from './components/EffectsManager.vue';
 import { PLANTS } from "@/Plants";
 import playSound from '@/Sounds';
 
 export default {
-  components: { GameShop, GardenCanvas },
+  components: { GameShop, GardenCanvas, EffectsManager },
   data() {
     const garden: Garden = {
       money: 0,
@@ -70,6 +71,7 @@ export default {
           if (plant.currentStep === plantType.steps.length - 1) {
             plant.harvestable = true;
             harvestable = true;
+            this.spawnFadeoutText(plant, "Ready", false);
           }
         }
       }
@@ -164,6 +166,7 @@ export default {
     plantClick(pos: Coord, plant: GardenPlant) {
       const plantType = PLANTS.find(x => x.name === plant.type)!;
       if (plant.harvestable) {
+        this.spawnFadeoutText(plant, `${plantType.plantPrice}`, true);
         playSound('SELL');
         this.garden.plants.splice(this.garden.plants.indexOf(plant), 1);
         this.garden.money += plantType.plantPrice;
@@ -173,14 +176,19 @@ export default {
         this.dirtClick(pos);
       }
     },
+    spawnFadeoutText(pos: Coord, text: string, hasIcon: boolean) {
+      const canvasPos: Coord = (<any>this.$refs.gardenCanvas).getRealLifePosition(pos);
+      (<any>this.$refs.effectsManager).addFadeoutText(text, canvasPos.x, canvasPos.y, hasIcon);
+    },
     dirtClick(pos: Coord) {
       if (!this.garden.selectedPlant) {
         return;
       }
-      if (this.garden.money < this.garden.selectedPlant.seedPrice) {
+      if (!this.canPlacePlantAt(pos, this.garden.selectedPlant)) {
         return;
       }
-      if (!this.canPlacePlantAt(pos, this.garden.selectedPlant)) {
+      if (this.garden.money < this.garden.selectedPlant.seedPrice) {
+        this.spawnFadeoutText(pos, "Not enough", true);
         return;
       }
       playSound('FROUF');
@@ -219,20 +227,25 @@ export default {
       }
       if (!this.garden.isBuyingDirt) return;
       const price = (Math.abs(pos.x) + Math.abs(pos.y)) * 10;
-      if (this.garden.money < price) return;
-      this.garden.money -= price;
       const buyable = this.garden.unlocked.some(p => Math.abs(p.x - pos.x) + Math.abs(p.y - pos.y) === 1);
-      if (buyable) {
-        this.garden.unlocked.push({
-          x: pos.x,
-          y: pos.y,
-          borders: { up: false, down: false, left: false, right: false, upRight: false, upLeft: false, downRight: false, downLeft: false },
-        });
-        playSound('FROUF');
-        this.recomputeAllBorders();
-        this.updateSelectedCell();
-        this.save();
+      if (!buyable) {
+        this.spawnFadeoutText(pos, "Too far", false);
+        return;
       }
+      if (this.garden.money < price) {
+        this.spawnFadeoutText(pos, "Not enough", true);
+        return;
+      }
+      this.garden.money -= price;
+      this.garden.unlocked.push({
+        x: pos.x,
+        y: pos.y,
+        borders: { up: false, down: false, left: false, right: false, upRight: false, upLeft: false, downRight: false, downLeft: false },
+      });
+      playSound('FROUF');
+      this.recomputeAllBorders();
+      this.updateSelectedCell();
+      this.save();
     },
     recomputeAllBorders() {
       this.garden.unlocked.forEach(unlocked => {
@@ -269,7 +282,7 @@ export default {
           const uncompressed = pako.inflate(base64.base64ToBytes(compressedData));
           const storedJson = new TextDecoder("utf-8").decode(uncompressed);
           const storedData = JSON.parse(storedJson);
-          this.garden.money = storedData.money || 0;
+          this.garden.money = Math.max(storedData.money || 0, 0);
           this.garden.plants = (storedData.plants || []).filter((p: GardenPlant) => PLANTS.some(x => x.name === p.type && p.currentStep < x.steps.length));
           this.garden.unlocked = (storedData.unlocked || []).map((p: Coord) => ({
             ...p,
@@ -298,12 +311,14 @@ export default {
   <main>
     <div class="column-left">
       <GardenCanvas
+        ref="gardenCanvas"
         :garden="garden"
         @gardenClick="onGardenClick"
         @gardenHover="onGardenHover"
         @mouseleave="onGardenLeave"
         :class="{ 'garden-clickable': isGameClickable }"
       />
+      <EffectsManager ref="effectsManager" />
     </div>
     <div class="column-right">
       <GameShop
@@ -339,5 +354,8 @@ main {
 }
 .garden-clickable {
   cursor: pointer;
+}
+.column-left {
+  position: relative;
 }
 </style>
