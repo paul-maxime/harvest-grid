@@ -99,8 +99,8 @@ export default {
     onPlantUnlocked() {
       if (this.garden.unlockedPlants >= PLANTS.length) return;
       const next = PLANTS[this.garden.unlockedPlants];
-      if (this.garden.money >= next.seedPrice) {
-        this.garden.money -= next.seedPrice;
+      if (this.garden.money >= next.unlockPrice) {
+        this.garden.money -= next.unlockPrice;
         this.garden.unlockedPlants += 1;
         playSound("SELL");
         this.save();
